@@ -3,8 +3,8 @@ const _ = require('lodash')
 
 const rowParsers = require('./old-docs-parser/table-row')
 const { parseVeturTags } = require('./old-docs-parser/vetur')
-const { parseInstallationSection } = require('./old-docs-parser/file-parser')
-const { intoTableMetaObjects } = require('./old-docs-parser/file-parser')
+const { parseInstallationSection } = require('./old-docs-parser/file')
+const { intoTableMetaObjects } = require('./old-docs-parser/file')
 
 function parseTable ({ rows, filename, headers, file }) {
   let tableHeader = rows[0].toLowerCase()
