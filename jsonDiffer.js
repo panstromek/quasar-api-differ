@@ -32,6 +32,15 @@ function fnFormat (name, params) {
   return `${name}(${Object.keys(params).join(', ')})`
 }
 
+function resolveDesc (api, newApi) {
+  let desc = ''
+  if (api.desc !== newApi.desc) {
+    desc += `   - BEFORE: ${api.desc}\n`
+    desc += `   - AFTER: ${newApi.desc}\n`
+  }
+  return desc
+}
+
 function diffEvents (oldEvents, newEvents = {}) {
   return Object.entries(oldEvents).map(([event, api]) => {
     if (!newEvents[event]) {
@@ -39,66 +48,55 @@ function diffEvents (oldEvents, newEvents = {}) {
     }
     const newApi = newEvents[event]
     let res = ''
-    let desc = ''
-    if (api.desc !== newApi.desc) {
-      desc += `   - BEFORE: ${api.desc}\n`
-      desc += `   - AFTER: ${newApi.desc}\n`
-    }
+    let desc = resolveDesc(api, newApi)
 
     const params = api.params
     if (!keyEqOrd(params, newApi.params)) {
       res += ` - \`@${fnFormat(event, params)}\` changed to \`@${fnFormat(event, newApi.params)}\`` + '\n'
       res += desc || newApi.desc
-    } else if (desc !== '') {
-      res += ` - \`@${fnFormat(event, params)}\` - description changed` + '\n'
+    }
+
+    return res
+  }).filter(r => r).join('\n')
+}
+
+function jsonTypeEq (api, newApi) {
+  return arraySetEq([api].flat(1), [newApi].flat(1))
+}
+
+function diffProps (oldProps, newProps) {
+  return Object.entries(oldProps).map(([prop, api]) => {
+    if (!newProps[prop]) {
+      return ` - \`${prop}\` was removed\n`
+    }
+    const newApi = newProps[prop]
+    let res = ''
+
+    let desc = resolveDesc(api, newApi)
+    if (!jsonTypeEq(api.type, newApi.type)) {
+      res += ` - \`${prop}\` - type changed from \`${api.type}\` to \`${newApi.type}\`\n`
       res += desc
     }
     return res
-  }).join('\n')
+  }).filter(r => r).join('\n')
 }
 
 oldApis
   .map(filename => {
     const oldApi = require(`./.json-api/${filename}`)
     const newApi = fs.existsSync(`${newApiDir}/${filename}`) && require(`${newApiDir}/${filename}`)
-    return { oldApi, newApi, name: filename.substring(0, filename.length - 4) }
+    return { oldApi, newApi, name: filename.substring(0, filename.length - 5) }
   })
   .forEach(({ oldApi, newApi, name }) => {
     if (!newApi) {
       return write(`## ${name}  - removed\n`)
     }
-    write(`## ${name}\n`)
+    write(`\n## ${name}\n`)
+    if (oldApi.props) {
+      write(diffProps(oldApi.props, newApi.props))
+    }
     if (oldApi.events) {
       write(diffEvents(oldApi.events, newApi.events))
     }
-    //
-    // write(`\n## ${name}\n`)
-    // return write(diff(oldApi, newApi))
   })
 
-function diff (oldVal, newVal, prefix = ' - ') {
-  function rawDiff () {
-    if (typeof oldVal === 'object') {
-      if (typeof newVal === 'object') {
-        return Object.entries(oldVal).map(([key, value]) => {
-          if (newVal[key]) {
-            return (key + '\n') + diff(value, newVal[key], '  ' + prefix)
-          } else {
-            return (key + ' => removed\n')
-          }
-        }).join('\n' + prefix)
-      } else {
-        return (`|${oldVal} | ${newVal}|\n`)
-      }
-    } else if (Array.isArray(oldVal) && Array.isArray(newVal)) {
-      if (!(arraySetEq(oldVal, newVal))) {
-        return (`|${oldVal} | ${newVal}|`)
-      }
-    } else if (oldVal !== newVal) {
-      return (`|${oldVal} | ${newVal}|`)
-    }
-    return ''
-  }
-
-  return prefix + rawDiff()
-}
