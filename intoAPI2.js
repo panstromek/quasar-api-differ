@@ -6,7 +6,7 @@ function toCamel (i) {
 }
 
 const rowParsers = require('./old-docs-parser/table-row')
-const { parseVeturTags} = require('./old-docs-parser/vetur-parser')
+const { parseVeturTags} = require('./old-docs-parser/vetur')
 const { parseInstallationSection } = require('./old-docs-parser/file-parser')
 const { intoTableMetaObjects } = require('./old-docs-parser/file-parser')
 
