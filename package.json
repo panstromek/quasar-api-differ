@@ -1,0 +1,13 @@
+{
+  "name": "q-differ",
+  "version": "0.0.1",
+  "author": "Matyáš Racek",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.17.11",
+    "quasar-old-docs": "quasarframework/quasar-framework.org"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.121"
+  }
+}
