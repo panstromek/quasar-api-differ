@@ -189,6 +189,26 @@ function parseInstallationPart (file) {
     .join(' ')
 }
 
+function hasDuplicates (elements, elementName, tagName) {
+  const duplicates = Object.values(_.groupBy(elements, el => el.name))
+    .filter(els => els.length > 1).flat(1)
+
+  if (duplicates.length > 0) {
+    console.log()
+    console.log(`duplicate ${elementName}s in table for tag: ${tagName}:`)
+    console.log(duplicates.map(dup => `${dup.name} - ${dup.desc}`))
+    return true
+  }
+  return false
+}
+
+function getElementsFromTable (element, tableData) {
+  const tag = tableData.tags[0]
+  const elements = tableData.table.filter(row => row.element === element)
+  hasDuplicates(elements, element, tag.camelName)
+  return elements
+}
+
 const tables = oldFileNames
   .map(filename => getAllTablesFromTheFile(filename))
   .flat(1)
@@ -209,21 +229,6 @@ console.log(tables
   .filter(tableData => tableData.tags.length > 1)
   .map(tableData => tableData.filename + ' --- ' + tableData.headers[tableData.headers.length - 1]))
 
-function getElementsFromTable (element, tableData) {
-  const tag = tableData.tags[0]
-  const elements = tableData.table.filter(row => row.element === element)
-
-  const duplicates = Object.values(_.groupBy(elements, el => el.name))
-    .filter(els => els.length > 1).flat(1)
-
-  if (duplicates.length > 0) {
-    console.log()
-    console.log(`duplicate ${element}s in table for tag: ${tag.camelName}:`)
-    console.log(duplicates.map(dup => `${dup.name} - ${dup.desc}`))
-  }
-  return elements
-}
-
 //
 // tags.map(tag => {
 //   const events = getElementsFromTable('event', tag)
@@ -233,12 +238,44 @@ function getElementsFromTable (element, tableData) {
 
 const singeMatchedTables = tables.filter(tableData => tableData.tags.length === 1)
 
-singeMatchedTables.map(tableData => {
-  const tag = tableData.tag
+const apis = singeMatchedTables.map(tableData => {
+  const tag = tableData.tags[0]
   const events = getElementsFromTable('event', tableData)
   const props = getElementsFromTable('prop', tableData)
   const methods = getElementsFromTable('method', tableData)
   if ([events, props, methods].filter(a => a.length).length !== 1) {
     console.log(tag + ' has mixed table')
   }
+  return {
+    tag,
+    events,
+    props,
+    methods,
+  }
 })
+
+let fullAPIs = Object
+  .entries(_.groupBy(apis, api => api.tag.name))
+  .map(([tag, apis]) => {
+    const events = apis.map(api => api.events).flat(1)
+    const props = apis.map(api => api.props).flat(1)
+    const methods = apis.map(api => api.methods).flat(1)
+    const hasDuplicates2 = (hasDuplicates(events, 'event', tag) ||
+      hasDuplicates(props, 'prop', tag) ||
+      hasDuplicates(methods, 'method', tag))
+    return { tag, events, props, methods, hasDuplicates: hasDuplicates2 }
+  })
+const nonProblematic =
+  fullAPIs
+    .filter(({ hasDuplicates }) => !hasDuplicates)
+
+const problematic =
+  fullAPIs
+    .filter(({ hasDuplicates }) => hasDuplicates)
+
+console.log('Non problematic:')
+console.log(nonProblematic.map(t => t.tag))
+
+console.log()
+console.log('Has duplicates:')
+console.log(problematic.map(t => t.tag))
