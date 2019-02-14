@@ -46,12 +46,6 @@ function matchComponent (tableData, tags) {
   const { filename, headers, table, file } = tableData
   tableData.tags = []
 
-  // let tagsMatchingFilenames = tags.filter(tag => filename === (tag.name.replace(/btn/g, 'button') + '.md'))
-  // if (tagsMatchingFilenames.length === 1) {
-  //   tableData.tags.push(tagsMatchingFilenames[0])
-  //   return tableData
-  // }
-
   const installationPart = parseInstallationSection(file)
   const tagsInInstallationPart = tags.filter(tag => {
     return installationPart.includes(`'${tag.pascalName}'`)
