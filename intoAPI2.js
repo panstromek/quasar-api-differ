@@ -6,6 +6,7 @@ function toCamel (i) {
 }
 
 const rowParsers = require('./old-docs-parser/table-row')
+const { parseVeturTags} = require('./old-docs-parser/vetur-parser')
 const { parseInstallationSection } = require('./old-docs-parser/file-parser')
 const { intoTableMetaObjects } = require('./old-docs-parser/file-parser')
 
@@ -54,14 +55,7 @@ function parseTable ({ rows, filename, headers, file }) {
   }
 }
 
-const tags = Object.entries(require('./old/quasar-tags')).map(([tag, attributes]) => {
-  return {
-    tag,
-    name: tag.substring(2),
-    camelName: toCamel(tag),
-    attributes
-  }
-})
+const tags = parseVeturTags(require('./old/quasar-tags'))
 
 const mdPath = 'node_modules/quasar-old-docs/source/components'
 const oldFileNames = fs.readdirSync(mdPath)
@@ -84,7 +78,7 @@ function matchComponent (tableData, tags) {
 
   const installationPart = parseInstallationSection(file)
   const tagsInInstallationPart = tags.filter(tag => {
-    return installationPart.includes(`'${tag.camelName}'`)
+    return installationPart.includes(`'${tag.pascalName}'`)
   })
   if (tagsInInstallationPart.length === 1) {
     tableData.tags.push(tagsInInstallationPart[0])
@@ -99,7 +93,7 @@ function matchComponent (tableData, tags) {
   let lastHeader = headers[headers.length - 1]
   const lastHeaderWords = lastHeader.replace(/\W/g, ' ').split(' ').map(word => word.trim()).filter(w => w)
   const tagsInHeader = tagsInInstallationPart.filter(tag => {
-    return lastHeaderWords.includes(tag.camelName)
+    return lastHeaderWords.includes(tag.pascalName)
   })
   if (tagsInHeader.length === 1) {
     tableData.tags.push(tagsInHeader[0])
@@ -111,7 +105,7 @@ function matchComponent (tableData, tags) {
     return tableData
   }
   console.log()
-  console.log(`${filename} -  multiple tags for header (${lastHeader}) - ${tagsInHeader.map(t => t.camelName)}`)
+  console.log(`${filename} -  multiple tags for header (${lastHeader}) - ${tagsInHeader.map(t => t.pascalName)}`)
   if (tagsInHeader.length) {
     tableData.tags.push(...tagsInHeader)
     return tableData
@@ -136,7 +130,7 @@ function hasDuplicates (elements, elementName, tagName) {
 function getElementsFromTable (element, tableData) {
   const tag = tableData.tags[0]
   const elements = tableData.table.filter(row => row.element === element)
-  hasDuplicates(elements, element, tag.camelName)
+  hasDuplicates(elements, element, tag.pascalName)
   return elements
 }
 
