@@ -6,6 +6,7 @@ function toCamel (i) {
 }
 
 const rowParsers = require('./old-docs-parser/table-row')
+const { parseInstallationSection } = require('./old-docs-parser/file-parser')
 const { intoTableMetaObjects } = require('./old-docs-parser/file-parser')
 
 function getAllTablesFromTheFile (filename) {
@@ -65,8 +66,14 @@ const tags = Object.entries(require('./old/quasar-tags')).map(([tag, attributes]
 const mdPath = 'node_modules/quasar-old-docs/source/components'
 const oldFileNames = fs.readdirSync(mdPath)
 
-function matchComponent (tableData) {
-  const { rows, filename, headers, table, file } = tableData
+/**
+ *
+ * @param tableData
+ * @param tags
+ * @return {{headers: Array, file: *, filename: *, rows: Array, tags: Array }[]}
+ */
+function matchComponent (tableData, tags) {
+  const { filename, headers, table, file } = tableData
   tableData.tags = []
 
   // let tagsMatchingFilenames = tags.filter(tag => filename === (tag.name.replace(/btn/g, 'button') + '.md'))
@@ -75,7 +82,7 @@ function matchComponent (tableData) {
   //   return tableData
   // }
 
-  const installationPart = parseInstallationPart(file)
+  const installationPart = parseInstallationSection(file)
   const tagsInInstallationPart = tags.filter(tag => {
     return installationPart.includes(`'${tag.camelName}'`)
   })
@@ -113,14 +120,6 @@ function matchComponent (tableData) {
   return tableData
 }
 
-function parseInstallationPart (file) {
-  return file.split('\n#')
-    .filter(part => part.toLowerCase().includes('install'))
-    .filter(part => part.includes('```js'))
-    .map(part => part.trim())
-    .join(' ')
-}
-
 function hasDuplicates (elements, elementName, tagName) {
   const duplicates = Object.values(_.groupBy(elements, el => el.name))
     .filter(els => els.length > 1).flat(1)
@@ -146,7 +145,7 @@ const tables = oldFileNames
   .flat(1)
   .map(tableData => parseTable(tableData))
   .filter(tableData => tableData.table.length) // filter empty (unparsed) tables
-  .map(matchComponent)
+  .map(tableData => matchComponent(tableData, tags))
 
 const unmatchedTables =
   tables
