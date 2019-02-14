@@ -12,25 +12,13 @@ function parseTable ({ rows, filename, headers, file }) {
 
   const typeCandidates = ['event', 'method', 'prop', 'modifier', 'class', 'injection']
     .filter(type => tableHeader.includes(type) || lastHeader.includes(type))
-
-//   if (typeCandidates.length === 0) {
-//     console.log(`
-// Missing parser for table in ${filename}
-// ${[lastHeader, tableHeader].join('\n')}
-//     `)
-//   } else if (typeCandidates.length > 1) {
-//     console.log(`
-// Multiple parsers ${typeCandidates} for table in ${filename}
-// ${[lastHeader, tableHeader].join('\n')}
-//     `)
-//   }
   const table = rows.map(row => {
     let parsedRows = typeCandidates.map(type => {
       const parser = rowParsers[type]
       return parser(row)
     }).filter(row => row)
     if (parsedRows.length > 1) {
-      console.log('more parsers parsed row + ' + row)
+      console.log('multiple  parsers parsed row: ' + row)
     }
     return parsedRows
   }).flat(1).filter(p => p)
