@@ -19,6 +19,7 @@ function parseTable ({ rows, filename, headers, file }) {
       return parser(row)
     }).filter(row => row)
     if (parsedRows.length > 1) {
+      // TODO should I throw here or what?
       console.log('multiple  parsers parsed row: ' + row)
     }
     return parsedRows
