@@ -1,21 +1,10 @@
 const fs = require('fs')
 const _ = require('lodash')
 
-function toCamel (i) {
-  return ('-' + i).replace(/-([a-z])/g, c => c[1].toUpperCase())
-}
-
 const rowParsers = require('./old-docs-parser/table-row')
-const { parseVeturTags} = require('./old-docs-parser/vetur')
+const { parseVeturTags } = require('./old-docs-parser/vetur')
 const { parseInstallationSection } = require('./old-docs-parser/file-parser')
 const { intoTableMetaObjects } = require('./old-docs-parser/file-parser')
-
-function getAllTablesFromTheFile (filename) {
-
-  const file = fs.readFileSync(`${mdPath}/${filename}`)
-    .toString()
-  return intoTableMetaObjects(file, filename)
-}
 
 function parseTable ({ rows, filename, headers, file }) {
   let tableHeader = rows[0].toLowerCase()
@@ -135,7 +124,8 @@ function getElementsFromTable (element, tableData) {
 }
 
 const tables = oldFileNames
-  .map(filename => getAllTablesFromTheFile(filename))
+  .map(filename => ({ filename, file: fs.readFileSync(`${mdPath}/${filename}`).toString() }))
+  .map(({ filename, file }) => intoTableMetaObjects(file, filename))
   .flat(1)
   .map(tableData => parseTable(tableData))
   .filter(tableData => tableData.table.length) // filter empty (unparsed) tables
