@@ -5,12 +5,13 @@ const rowParsers = require('./old-docs-parser/table-row')
 const { parseVeturTags } = require('./old-docs-parser/vetur')
 const { parseInstallationSection } = require('./old-docs-parser/file')
 const { intoTableMetaObjects } = require('./old-docs-parser/file')
+const tableDataTypes = ['event', 'method', 'prop', 'modifier', 'class', 'injection']
 
 function parseTable ({ rows, filename, headers, file }) {
   let tableHeader = rows[0].toLowerCase()
   let lastHeader = (headers[headers.length - 1] || '').toLowerCase()
 
-  const typeCandidates = ['event', 'method', 'prop', 'modifier', 'class', 'injection']
+  const typeCandidates = tableDataTypes
     .filter(type => tableHeader.includes(type) || lastHeader.includes(type))
   const table = rows.map(row => {
     let parsedRows = typeCandidates.map(type => {
