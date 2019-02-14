@@ -2734,7 +2734,7 @@ qs@6.2.3:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.2.3.tgz#1cfcb25c10a9b2b483053ff39f5dfc9233908cfe"
   integrity sha1-HPyyXBCpsrSDBT/zn138kjOQjP4=
 
-quasar-old-docs@quasarframework/quasar-framework.org:
+"quasar-old-docs@github:quasarframework/quasar-framework.org":
   version "0.0.0"
   resolved "https://codeload.github.com/quasarframework/quasar-framework.org/tar.gz/9170691ab2ef09ec2a7a6b358fec489b1472ff74"
   dependencies:
@@ -2757,6 +2757,11 @@ quasar-old-docs@quasarframework/quasar-framework.org:
     hexo-renderer-marked "^0.2.10"
     hexo-renderer-stylus "^0.3.1"
     hexo-server "^0.2.0"
+
+quasar@^1.0.0-beta.1:
+  version "1.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/quasar/-/quasar-1.0.0-beta.1.tgz#c75aaa82c0dcbf847b5754cbdd95e4817ba59894"
+  integrity sha512-TU3GeV/LjtteqInEdCkT2SPhjDhFdN+0EL0S1kgkO/I91FabpA1A6JGk+IGKCxsrZ5QcKPFCm0y/PbnwHjKFDA==
 
 randomatic@^3.0.0:
   version "3.1.1"

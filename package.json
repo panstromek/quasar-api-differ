@@ -5,7 +5,8 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "^4.17.11",
-    "quasar-old-docs": "quasarframework/quasar-framework.org"
+    "quasar": "^1.0.0-beta.1",
+    "quasar-old-docs": "github:quasarframework/quasar-framework.org"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.121"
