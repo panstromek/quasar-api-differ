@@ -11,13 +11,10 @@ function parseTable ({ rows, filename, headers, file }) {
   let tableHeader = rows[0].toLowerCase()
   let lastHeader = (headers[headers.length - 1] || '').toLowerCase()
 
-  const typeCandidates = tableDataTypes
-    .filter(type => tableHeader.includes(type) || lastHeader.includes(type))
+  const typeCandidates = tableDataTypes.filter(type => tableHeader.includes(type) || lastHeader.includes(type))
+
   const table = rows.map(row => {
-    let parsedRows = typeCandidates.map(type => {
-      const parser = rowParsers[type]
-      return parser(row)
-    }).filter(row => row)
+    let parsedRows = typeCandidates.map(type => rowParsers[type](row)).filter(row => row)
     if (parsedRows.length > 1) {
       // TODO should I throw here or what?
       console.log('multiple  parsers parsed row: ' + row)
