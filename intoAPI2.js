@@ -6,40 +6,13 @@ function toCamel (i) {
 }
 
 const rowParsers = require('./old-docs-parser/table-row')
+const { intoTableMetaObjects } = require('./old-docs-parser/file-parser')
 
 function getAllTablesFromTheFile (filename) {
 
   const file = fs.readFileSync(`${mdPath}/${filename}`)
     .toString()
-
-  const tables = [{
-    headers: [],
-    rows: [],
-    file,
-    filename
-  }]
-
-  file
-    .split('\n')
-    .map(line => line.trim())
-    .filter(line => line.startsWith('#') || line.startsWith('|'))
-    .forEach(line => {
-      if (line.startsWith('#')) {
-        if (tables[0].rows.length) {
-          tables.unshift({
-            headers: [line],
-            rows: [],
-            file,
-            filename
-          })
-        } else {
-          tables[0].headers.push(line)
-        }
-      } else if (line.startsWith('|')) {
-        tables[0].rows.push(line)
-      }
-    })
-  return tables.filter(table => table.rows.length > 0)
+  return intoTableMetaObjects(file, filename)
 }
 
 function parseTable ({ rows, filename, headers, file }) {
