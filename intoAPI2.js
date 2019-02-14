@@ -2,6 +2,7 @@ const fs = require('fs')
 const _ = require('lodash')
 
 const rowParsers = require('./old-docs-parser/table-row')
+const kebabToPascal = require('./utils/casing').kebabToPascal
 const { parseVeturTags } = require('./old-docs-parser/vetur')
 const { parseInstallationSection } = require('./old-docs-parser/file')
 const { intoTableMetaObjects } = require('./old-docs-parser/file')
@@ -42,7 +43,7 @@ const oldFileNames = fs.readdirSync(mdPath)
  * @param tags
  * @return {{headers: Array, file: *, filename: *, rows: Array, tags: Array }[]}
  */
-function matchComponent (tableData, tags) {
+function matchTag (tableData, tags) {
   const { filename, headers, table, file } = tableData
   tableData.tags = []
 
@@ -110,7 +111,7 @@ const tables = oldFileNames
   .flat(1)
   .map(tableData => parseTable(tableData))
   .filter(tableData => tableData.table.length) // filter empty (unparsed) tables
-  .map(tableData => matchComponent(tableData, tags))
+  .map(tableData => matchTag(tableData, tags))
 
 const unmatchedTables =
   tables
@@ -175,3 +176,55 @@ console.log(tables
 
 console.log('Has duplicates:')
 console.log(problematic.map(t => t.tag))
+
+if (!fs.existsSync('.json-api')) {
+  fs.mkdirSync('.json-api')
+}
+
+function write (tag, api) {
+  tag = kebabToPascal(`q-${tag}`)
+  fs.writeFileSync(`.json-api/${tag}.json`, JSON.stringify(api))
+}
+
+function paramsToJSON (params) {
+  return params.reduce((jsonParams, param) => ({ ...jsonParams, [param]: {} }), {})
+}
+
+nonProblematic.forEach(({ tag, events, props, methods }) => {
+  const jsonAPI = {
+    type: 'component',
+  }
+  if (events.length) {
+    jsonAPI.events = events.reduce((jsonEvents, { name, desc, params }) => ({
+      ...jsonEvents,
+      [name]: { desc, params: paramsToJSON(params) }
+    }), {})
+  }
+  if (props.length) {
+    jsonAPI.props = {}
+    props.forEach(({ name, type, desc }) => {
+      jsonAPI.props[name] = {
+        type: intoJSONAPIType(type),
+        desc
+      }
+    })
+  }
+  if (methods.length) {
+    jsonAPI.methods = {}
+    methods.forEach(({ name, params, desc }) => {
+      jsonAPI.methods[name] = {
+        params: paramsToJSON(params),
+        desc
+      }
+    })
+  }
+
+  write(tag, jsonAPI)
+})
+
+function intoJSONAPIType (type) {
+  if (type.length === 1) {
+    return type[0]
+  }
+  return type
+}
