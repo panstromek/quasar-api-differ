@@ -220,15 +220,6 @@ const unmatchedTables =
   tables
     .filter(tableData => tableData.tags.length === 0) /// TODO try to lookup missing tags/attrs in unmatched tables (works only for props) (icon)
 
-console.log()
-console.log('Unmatched Tables:')
-console.log(unmatchedTables.map(tableData => tableData.filename + ' --- ' + tableData.headers[tableData.headers.length - 1]))
-console.log()
-console.log('MultiMatched Tables:')
-console.log(tables
-  .filter(tableData => tableData.tags.length > 1)
-  .map(tableData => tableData.filename + ' --- ' + tableData.headers[tableData.headers.length - 1]))
-
 //
 // tags.map(tag => {
 //   const events = getElementsFromTable('event', tag)
@@ -277,5 +268,14 @@ console.log('Non problematic:')
 console.log(nonProblematic.map(t => t.tag))
 
 console.log()
+console.log()
+console.log('Unmatched Tables:')
+console.log(unmatchedTables.map(tableData => tableData.filename + ' --- ' + tableData.headers[tableData.headers.length - 1]))
+console.log()
+console.log('MultiMatched Tables:')
+console.log(tables
+  .filter(tableData => tableData.tags.length > 1)
+  .map(tableData => tableData.filename + ' --- ' + tableData.headers[tableData.headers.length - 1]))
+
 console.log('Has duplicates:')
 console.log(problematic.map(t => t.tag))
