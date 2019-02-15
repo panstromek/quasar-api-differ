@@ -51,13 +51,13 @@ function resolveDesc (api, newApi) {
   return desc
 }
 
-function diffAPIs (oldApi, diffFn, newApi, formatNew) {
+function diffAPIs (oldApi, newApi, diffFn, formatNewFn) {
   return Object.entries(oldApi)
     .map(diffFn).filter(r => r)
     .concat(
       ...Object.entries(newApi)
         .filter(([event]) => !oldApi[event])
-        .map(formatNew)
+        .map(formatNewFn)
     ).join('\n')
 }
 
@@ -81,7 +81,7 @@ function diffEvents (oldEvents, newEvents = {}) {
 
     return res
   }
-  return diffAPIs(oldEvents, diffOldEvent, newEvents, formatNewEvent)
+  return diffAPIs(oldEvents, newEvents, diffOldEvent, formatNewEvent)
 }
 
 function jsonTypeEq (api, newApi) {
