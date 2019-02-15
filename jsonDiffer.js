@@ -1,5 +1,7 @@
 const fs = require('fs')
 const _ = require('lodash')
+const { arraySetEq } = require('./utils/eq')
+const { keyEqOrd } = require('./utils/eq')
 
 let newApiDir = './node_modules/quasar/dist/api'
 let oldApiDir = './.json-api'
@@ -12,24 +14,8 @@ If you find problem, report it please.
 
 `)
 
-function arraySetEq (oldVal, newVal) {
-  return oldVal.length === newVal.length && oldVal.filter(val => newVal.includes(val)).length === newVal.length
-}
-
-function arrayEq (arr, arr2) {
-  return arr.length === arr2.length && arr.filter((val, i) => arr2[i] === val).length === arr2.length
-}
-
 function write (data) {
   fs.appendFileSync(target, data)
-}
-
-function keySetEq (o1 = {}, o2 = {}) {
-  return arraySetEq(Object.keys(o1), Object.keys(o2))
-}
-
-function keyEqOrd (o1 = {}, o2 = {}) {
-  return arrayEq(Object.keys(o1), Object.keys(o2))
 }
 
 function eventFormat (name, params) {
