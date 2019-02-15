@@ -51,31 +51,37 @@ function resolveDesc (api, newApi) {
   return desc
 }
 
-function diffEvents (oldEvents, newEvents = {}) {
-  return Object.entries(oldEvents)
-    .map(([event, api]) => {
-      if (!newEvents[event]) {
-        return ` - \`${eventFormat(event, api.params)}\` was removed\n`
-      }
-      const newApi = newEvents[event]
-      let res = ''
-      let desc = resolveDesc(api, newApi)
-
-      const params = api.params
-      if (!keyEqOrd(params, newApi.params)) {
-        res += ` - \`${eventFormat(event, params)}\` changed to \`${eventFormat(event, newApi.params)}\`` + '\n'
-        res += desc || newApi.desc
-      }
-
-      return res
-    }).filter(r => r)
+function diffAPIs (oldApi, diffFn, newApi, formatNew) {
+  return Object.entries(oldApi)
+    .map(diffFn).filter(r => r)
     .concat(
-      ...Object.entries(newEvents)
-        .filter(([event]) => !oldEvents[event])
-        .map(([event, api]) => {
-          return ` - \`@${fnFormat(event, api.params)}\` - NEW\n   - ` + api.desc
-        })
+      ...Object.entries(newApi)
+        .filter(([event]) => !oldApi[event])
+        .map(formatNew)
     ).join('\n')
+}
+
+function diffEvents (oldEvents, newEvents = {}) {
+  const formatNewEvent = ([event, api]) => {
+    return ` - \`@${fnFormat(event, api.params)}\` - NEW\n   - ` + api.desc
+  }
+  const diffOldEvent = ([event, api]) => {
+    if (!newEvents[event]) {
+      return ` - \`${eventFormat(event, api.params)}\` was removed\n`
+    }
+    const newApi = newEvents[event]
+    let res = ''
+    let desc = resolveDesc(api, newApi)
+
+    const params = api.params
+    if (!keyEqOrd(params, newApi.params)) {
+      res += ` - \`${eventFormat(event, params)}\` changed to \`${eventFormat(event, newApi.params)}\`` + '\n'
+      res += desc || newApi.desc
+    }
+
+    return res
+  }
+  return diffAPIs(oldEvents, diffOldEvent, newEvents, formatNewEvent)
 }
 
 function jsonTypeEq (api, newApi) {
