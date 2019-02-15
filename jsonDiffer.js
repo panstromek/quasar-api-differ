@@ -62,26 +62,18 @@ function diffAPIs (oldApi, newApi, diffFn, formatNewFn) {
 }
 
 function diffEvents (oldEvents, newEvents = {}) {
-  const formatNewEvent = ([event, api]) => {
-    return ` - \`@${fnFormat(event, api.params)}\` - NEW\n   - ` + api.desc
-  }
-  const diffOldEvent = ([event, api]) => {
+  return diffAPIs(oldEvents, newEvents, ([event, api]) => {
     if (!newEvents[event]) {
       return ` - \`${eventFormat(event, api.params)}\` was removed\n`
     }
     const newApi = newEvents[event]
-    let res = ''
-    let desc = resolveDesc(api, newApi)
-
     const params = api.params
     if (!keyEqOrd(params, newApi.params)) {
-      res += ` - \`${eventFormat(event, params)}\` changed to \`${eventFormat(event, newApi.params)}\`` + '\n'
-      res += desc || newApi.desc
+      return ` - \`${eventFormat(event, params)}\` changed to \`${eventFormat(event, newApi.params)}\`
+${resolveDesc(api, newApi)}`
     }
 
-    return res
-  }
-  return diffAPIs(oldEvents, newEvents, diffOldEvent, formatNewEvent)
+  }, ([event, api]) => ` - \`${eventFormat(event, api.params)}\` - NEW\n   - ${api.desc}`)
 }
 
 function jsonTypeEq (api, newApi) {
