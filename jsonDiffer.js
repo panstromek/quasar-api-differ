@@ -81,7 +81,7 @@ function jsonTypeEq (api, newApi) {
 }
 
 function diffProps (oldProps, newProps) {
-  return Object.entries(oldProps).map(([prop, api]) => {
+  return diffAPIs(oldProps, newProps, ([prop, api]) => {
     if (!newProps[prop]) {
       return ` - \`${prop}\` was removed\n`
     }
@@ -91,7 +91,10 @@ function diffProps (oldProps, newProps) {
       return ` - \`${prop}\` - type changed from \`${api.type}\` to \`${api.type}\`
 ${resolveDesc(api, newApi)}`
     }
-  }).filter(r => r).join('\n')
+  }, ([prop, api]) => {
+    return ` - \`${prop}\`: {${api.type.join('|')}}  - NEW\n   - ${api.desc}`
+  })
+
 }
 
 function diffMethods (oldMethods, newMethods = {}) {
