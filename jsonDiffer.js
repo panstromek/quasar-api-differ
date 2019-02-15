@@ -44,13 +44,8 @@ function fnFormat (name, params = {}) {
   return `${name}(${Object.keys(params).join(', ')})`
 }
 
-function resolveDesc (api, newApi) {
-  let desc = ''
-  if (api.desc !== newApi.desc) {
-    desc += `   - BEFORE: ${api.desc}\n`
-    desc += `   - AFTER: ${newApi.desc}\n`
-  }
-  return desc
+function resolveDesc (oldApi, newApi) {
+  return oldApi.desc === newApi.desc && `   - BEFORE: ${oldApi.desc}\n   - AFTER: ${newApi.desc}\n` || ''
 }
 
 function diffAPIs (oldApi, newApi, diffFn, formatNewFn) {
