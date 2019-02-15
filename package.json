@@ -8,7 +8,5 @@
     "quasar": "^1.0.0-beta.1",
     "quasar-old-docs": "github:quasarframework/quasar-framework.org"
   },
-  "devDependencies": {
-    "@types/lodash": "^4.14.121"
-  }
+  "devDependencies": {}
 }
