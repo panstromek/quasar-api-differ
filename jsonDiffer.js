@@ -6,7 +6,9 @@ let oldApiDir = './.json-api'
 const oldApis = fs.readdirSync(oldApiDir)
 
 const target = 'api-diff.md'
-fs.writeFileSync(target, '# Quasar API diff.\n')
+fs.writeFileSync(target, `# Quasar API rich diff
+This is generated - information may be incorrect.
+If you find problem, report it please.`)
 
 function arraySetEq (oldVal, newVal) {
   return oldVal.length === newVal.length && oldVal.filter(val => newVal.includes(val)).length === newVal.length
@@ -28,7 +30,15 @@ function keyEqOrd (o1 = {}, o2 = {}) {
   return arrayEq(Object.keys(o1), Object.keys(o2))
 }
 
-function fnFormat (name, params) {
+function eventFormat (name, params) {
+  if (params) {
+    return `@${name}(${Object.keys(params).join(', ')})`
+  }
+  return `@${name}`
+
+}
+
+function fnFormat (name, params = {}) {
   return `${name}(${Object.keys(params).join(', ')})`
 }
 
@@ -42,22 +52,30 @@ function resolveDesc (api, newApi) {
 }
 
 function diffEvents (oldEvents, newEvents = {}) {
-  return Object.entries(oldEvents).map(([event, api]) => {
-    if (!newEvents[event]) {
-      return ` - \`@${event}\` was removed\n`
-    }
-    const newApi = newEvents[event]
-    let res = ''
-    let desc = resolveDesc(api, newApi)
+  return Object.entries(oldEvents)
+    .map(([event, api]) => {
+      if (!newEvents[event]) {
+        return ` - \`${eventFormat(event, api.params)}\` was removed\n`
+      }
+      const newApi = newEvents[event]
+      let res = ''
+      let desc = resolveDesc(api, newApi)
 
-    const params = api.params
-    if (!keyEqOrd(params, newApi.params)) {
-      res += ` - \`@${fnFormat(event, params)}\` changed to \`@${fnFormat(event, newApi.params)}\`` + '\n'
-      res += desc || newApi.desc
-    }
+      const params = api.params
+      if (!keyEqOrd(params, newApi.params)) {
+        res += ` - \`${eventFormat(event, params)}\` changed to \`${eventFormat(event, newApi.params)}\`` + '\n'
+        res += desc || newApi.desc
+      }
 
-    return res
-  }).filter(r => r).join('\n')
+      return res
+    }).filter(r => r)
+    .concat(
+      ...Object.entries(newEvents)
+        .filter(([event]) => !oldEvents[event])
+        .map(([event, api]) => {
+          return ` - \`@${fnFormat(event, api.params)}\` - NEW\n   - ` + api.desc
+        })
+    ).join('\n')
 }
 
 function jsonTypeEq (api, newApi) {
@@ -70,14 +88,25 @@ function diffProps (oldProps, newProps) {
       return ` - \`${prop}\` was removed\n`
     }
     const newApi = newProps[prop]
-    let res = ''
 
-    let desc = resolveDesc(api, newApi)
     if (!jsonTypeEq(api.type, newApi.type)) {
-      res += ` - \`${prop}\` - type changed from \`${api.type}\` to \`${newApi.type}\`\n`
-      res += desc
+      return ` - \`${prop}\` - type changed from \`${api.type}\` to \`${api.type}\`
+${resolveDesc(api, newApi)}`
     }
-    return res
+  }).filter(r => r).join('\n')
+}
+
+function diffMethods (oldMethods, newMethods = {}) {
+  return Object.entries(oldMethods).map(([method, api]) => {
+    const params = api.params
+    if (!newMethods[method]) {
+      return ` - \`${fnFormat(method, params)}\` was removed\n`
+    }
+    const newApi = newMethods[method]
+    if (!keyEqOrd(params, newApi.params)) {
+      return ` - \`${fnFormat(method, params)}\` changed to \`${fnFormat(method, newApi.params)}\`` + '\n'
+        + resolveDesc(api, newApi)
+    }
   }).filter(r => r).join('\n')
 }
 
@@ -97,6 +126,10 @@ oldApis
     }
     if (oldApi.events) {
       write(diffEvents(oldApi.events, newApi.events))
+    }
+
+    if (oldApi.methods) {
+      write(diffMethods(oldApi.methods, newApi.methods))
     }
   })
 
