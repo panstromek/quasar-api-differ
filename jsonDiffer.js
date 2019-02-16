@@ -134,17 +134,17 @@ fs.readdirSync(`${newApiDir}`)
       oldApi = {}
     }
 
-    if (true) {
-      const diff = diffProps(oldApi.props, newApi.props).trimRight()
-      if (diff) {write(`#### Props\n` + diff + '\n')}
+    const propDiff = diffProps(oldApi.props, newApi.props).trimRight()
+    if (propDiff) {
+      write(`#### Props\n` + propDiff + '\n')
     }
-    if (true) {
-      const diff = diffEvents(oldApi.events, newApi.events).trimRight()
-      if (diff) {write(`#### Events\n` + diff + '\n') }
+    const eventDiff = diffEvents(oldApi.events, newApi.events).trimRight()
+    if (eventDiff) {
+      write(`#### Events\n` + eventDiff + '\n')
     }
-    if (true) {
-      const diff = diffMethods(oldApi.methods, newApi.methods).trimRight()
-      if (diff) {write(`#### Methods\n` + diff + '\n')}
+    const methodDiff = diffMethods(oldApi.methods, newApi.methods).trimRight()
+    if (methodDiff) {
+      write(`#### Methods\n` + methodDiff + '\n')
     }
   })
 
