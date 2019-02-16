@@ -3,9 +3,17 @@ const _ = require('lodash')
 const { arraySetEq } = require('./utils/eq')
 const { keyEqOrd } = require('./utils/eq')
 
+const { intoJSONAPI } = require('./old-docs-parser/vetur')
+
 let newApiDir = './node_modules/quasar/dist/api'
 let oldApiDir = './.json-api'
 const oldApis = fs.readdirSync(oldApiDir)
+
+const oldTags = require('./old/quasar-tags')
+const oldAttrs = require('./old/quasar-attributes')
+const { mergeApis } = require('./utils/mergeAPIs')
+
+const veturAPI = intoJSONAPI(oldTags, oldAttrs)
 
 const target = 'api-diff.md'
 fs.writeFileSync(target, `# Quasar API XOR (old XOR new)
@@ -94,11 +102,15 @@ function diffMethods (oldMethods, newMethods = {}) {
     ([method, api]) => ` - \`${fnFormat(method, api.params)}\`}  - **NEW**\n   - ${api.desc}`)
 }
 
+function desuffix (filename) {
+  return filename.substring(0, filename.length - 5)
+}
+
 oldApis
   .map(filename => {
-    const oldApi = require(`./.json-api/${filename}`)
+    const oldApi = mergeApis(veturAPI[desuffix(filename)], require(`./.json-api/${filename}`))
     const newApi = fs.existsSync(`${newApiDir}/${filename}`) && require(`${newApiDir}/${filename}`)
-    return { oldApi, newApi, name: filename.substring(0, filename.length - 5) }
+    return { oldApi, newApi, name: desuffix(filename) }
   })
   .forEach(({ oldApi, newApi, name }) => {
     if (!newApi) {
