@@ -25,13 +25,6 @@ function hasDuplicates (elements, elementName, tagName) {
   return false
 }
 
-function getElementsFromTable (element, tableData) {
-  const tag = tableData.tags[0]
-  const elements = tableData.table.filter(row => row.element === element)
-  hasDuplicates(elements, element, tag.pascalName)
-  return elements
-}
-
 const tables = oldFileNames
   .map(filename => ({ filename, file: fs.readFileSync(`${mdPath}/${filename}`).toString() }))
   .map(({ filename, file }) => intoTableMetaObjects(file, filename))
@@ -51,9 +44,9 @@ const singeMatchedTables = tables.filter(tableData => tableData.tags.length === 
 
 const apis = singeMatchedTables.map(tableData => {
   const tag = tableData.tags[0]
-  const events = getElementsFromTable('event', tableData)
-  const props = getElementsFromTable('prop', tableData)
-  const methods = getElementsFromTable('method', tableData)
+  const events = tableData.table.filter(row => row.element === 'event')
+  const props = tableData.table.filter(row => row.element === 'prop')
+  const methods = tableData.table.filter(row => row.element === 'method')
   if ([events, props, methods].filter(a => a.length).length !== 1) {
     console.log(tag + ' has mixed table')
   }
