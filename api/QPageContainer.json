@@ -1,8 +1,0 @@
-{
-  "type": "component",
-  "slots": {
-    "default": {
-      "desc": "Encapsulates a QPage (either directly or through <router-view>)"
-    }
-  }
-}

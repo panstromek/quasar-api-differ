@@ -1,10 +1,8 @@
 const fs = require('fs')
 const _ = require('lodash')
 
-const oldTags = require('./old/quasar-tags')
-const newTags = require('./new/quasar-tags')
-const oldAttrs = require('./old/quasar-attributes')
-const newAttrs = require('./new/quasar-attributes')
+const oldTags = require('./node_modules/quasar-framework/dist/helper-json/quasar-tags')
+const oldAttrs = require('./node_modules/quasar-framework/dist/helper-json/quasar-attributes')
 const { mergeApis } = require('./utils/mergeAPIs')
 const { intoJSONAPI } = require('./old-docs-parser/vetur')
 
@@ -19,5 +17,4 @@ fs.readdirSync(oldApiDir)
     const oldApi = require(`./.json-api/${filename}`)
     fs.writeFileSync('merged-' + filename,
       JSON.stringify(mergeApis(veturAPI[filename.substring(0, filename.length - 5)], oldApi)))
-
   })

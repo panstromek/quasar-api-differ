@@ -1,12 +1,9 @@
 const fs = require('fs')
 
-const renamed = {}
-
-const oldTags = require('./old/quasar-tags')
-const newTags = require('./new/quasar-tags')
-const oldAttrs = require('./old/quasar-attributes')
-const newAttrs = require('./new/quasar-attributes')
-
+const oldTags = require('./node_modules/quasar-framework/dist/helper-json/quasar-tags')
+const newTags = require('./node_modules/quasar/dist/vetur/quasar-tags')
+const oldAttrs = require('./node_modules/quasar-framework/dist/helper-json/quasar-attributes')
+const newAttrs = require('./node_modules/quasar/dist/vetur/quasar-attributes')
 
 const diff = '# Quasar props diff\n' +
   Object.entries(oldTags)

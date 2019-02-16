@@ -1,8 +1,0 @@
-{
-  "type": "component",
-  "slots": {
-    "default": {
-      "desc": "Default slot in the devland unslotted content of the component"
-    }
-  }
-}

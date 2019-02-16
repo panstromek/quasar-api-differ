@@ -7,8 +7,8 @@ const { intoJSONAPI } = require('./old-docs-parser/vetur')
 
 let newApiDir = './node_modules/quasar/dist/api'
 
-const oldTags = require('./old/quasar-tags')
-const oldAttrs = require('./old/quasar-attributes')
+const oldTags = require('./node_modules/quasar-framework/dist/helper-json/quasar-tags')
+const oldAttrs = require('./node_modules/quasar-framework/dist/helper-json/quasar-attributes')
 const { mergeApis } = require('./utils/mergeAPIs')
 
 const veturAPIs = intoJSONAPI(oldTags, oldAttrs)

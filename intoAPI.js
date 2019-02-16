@@ -32,7 +32,7 @@ function parseTable ({ rows, filename, headers, file }) {
   }
 }
 
-const tags = parseVeturTags(require('./old/quasar-tags'))
+const tags = parseVeturTags(require('./node_modules/quasar-framework/dist/helper-json/quasar-tags'))
 
 const mdPath = 'node_modules/quasar-old-docs/source/components'
 const oldFileNames = fs.readdirSync(mdPath)
@@ -138,7 +138,7 @@ const apis = singeMatchedTables.map(tableData => {
     tag,
     events,
     props,
-    methods,
+    methods
   }
 })
 
@@ -182,8 +182,7 @@ if (!fs.existsSync('.json-api')) {
 }
 
 function write (tag, api) {
-  tag = kebabToPascal(`q-${tag}`)
-  fs.writeFileSync(`.json-api/${tag}.json`, JSON.stringify(api))
+  fs.writeFileSync(`.json-api/${kebabToPascal(`q-${tag}`)}.json`, JSON.stringify(api))
 }
 
 function paramsToJSON (params) {
@@ -192,7 +191,7 @@ function paramsToJSON (params) {
 
 nonProblematic.forEach(({ tag, events, props, methods }) => {
   const jsonAPI = {
-    type: 'component',
+    type: 'component'
   }
   if (events.length) {
     jsonAPI.events = events.reduce((jsonEvents, { name, desc, params }) => ({
