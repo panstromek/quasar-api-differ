@@ -6,8 +6,6 @@ const { keyEqOrd } = require('./utils/eq')
 const { intoJSONAPI } = require('./old-docs-parser/vetur')
 
 let newApiDir = './node_modules/quasar/dist/api'
-let oldApiDir = './.json-api'
-const oldApis = fs.readdirSync(oldApiDir)
 
 const oldTags = require('./old/quasar-tags')
 const oldAttrs = require('./old/quasar-attributes')
@@ -34,7 +32,6 @@ function eventFormat (name, params) {
     return `@${name}(${Object.keys(params).join(', ')})`
   }
   return `@${name}`
-
 }
 
 function fnFormat (name, params = {}) {
@@ -66,7 +63,6 @@ function diffEvents (oldEvents, newEvents = {}) {
       return ` - \`${eventFormat(event, params)}\` changed to \`${eventFormat(event, newApi.params)}\`
 ${resolveDesc(api, newApi)}`
     }
-
   }, ([event, api]) => ` - \`${eventFormat(event, api.params)}\` - **NEW**\n   - ${api.desc}`)
 }
 
@@ -91,15 +87,16 @@ ${resolveDesc(api, newApi)}`
 }
 
 function diffMethods (oldMethods, newMethods = {}) {
-  return diffAPIs(oldMethods, newMethods, ([method, api]) => {
+  return diffAPIs(oldMethods, newMethods,
+    ([method, api]) => {
       const params = api.params
       if (!newMethods[method]) {
         return ` - \`${fnFormat(method, params)}\` was removed\n`
       }
       const newApi = newMethods[method]
       if (!keyEqOrd(params, newApi.params)) {
-        return ` - \`${fnFormat(method, params)}\` changed to \`${fnFormat(method, newApi.params)}\`` + '\n'
-          + resolveDesc(api, newApi)
+        return ` - \`${fnFormat(method, params)}\` changed to \`${fnFormat(method, newApi.params)}\`` + '\n' +
+          resolveDesc(api, newApi)
       }
     },
     ([method, api]) => ` - \`${fnFormat(method, api.params)}\`  - **NEW**\n   - ${api.desc}`)
@@ -118,8 +115,8 @@ fs.readdirSync(`${newApiDir}`)
     .map(([name, veturApi]) => {
       const filename = name + '.json'
       const oldApi = mergeApis(veturApi,
-        fs.existsSync(`./.json-api/${filename}`) ?
-          require(`./.json-api/${filename}`) : {})
+        fs.existsSync(`./.json-api/${filename}`)
+          ? require(`./.json-api/${filename}`) : {})
       const newApi = fs.existsSync(`${newApiDir}/${filename}`) && require(`${newApiDir}/${filename}`)
       return { oldApi, newApi, name }
     }))
@@ -147,4 +144,3 @@ fs.readdirSync(`${newApiDir}`)
       write(`#### Methods\n` + methodDiff + '\n')
     }
   })
-

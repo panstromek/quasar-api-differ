@@ -8,5 +8,15 @@
     "quasar": "^1.0.0-beta.1",
     "quasar-old-docs": "github:quasarframework/quasar-framework.org"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "eslint": "^5.9.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-friendly-formatter": "^4.0.1",
+    "eslint-loader": "^2.0.0",
+    "eslint-plugin-cypress": "^2.1.2",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0"
+  }
 }
