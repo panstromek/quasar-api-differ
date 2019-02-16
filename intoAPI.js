@@ -42,7 +42,7 @@ const unmatchedTables =
 
 const singeMatchedTables = tables.filter(tableData => tableData.tags.length === 1)
 
-const apis = singeMatchedTables.map(tableData => {
+const singeMatchAPIs = singeMatchedTables.map(tableData => {
   const {
     event: events = [],
     prop: props = [],
@@ -58,7 +58,7 @@ const apis = singeMatchedTables.map(tableData => {
 })
 
 let fullAPIs = Object
-  .entries(_.groupBy(apis, api => api.tag.name))
+  .entries(_.groupBy(singeMatchAPIs, api => api.tag.name))
   .map(([tag, apis]) => {
     return {
       tag,
