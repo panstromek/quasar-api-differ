@@ -16,6 +16,9 @@ const { mergeApis } = require('./utils/mergeAPIs')
 const veturAPIs = intoJSONAPI(oldTags, oldAttrs)
 
 const target = 'api-diff.md'
+
+const replacements = _.fromPairs(require('./v1-replacements.json'))
+
 fs.writeFileSync(target, `# Quasar API XOR (old XOR new)
 This is generated - information may be incorrect.
 If you find problem, report it please.
@@ -117,7 +120,7 @@ Object.entries(veturAPIs)
   })
   .forEach(({ oldApi, newApi, name }) => {
     if (!newApi) {
-      return write(`## ${name}  - removed\n`)
+      return write(`## ${name}  - removed\n   - ${replacements[name]}\n`)
     }
     write(`\n## ${name}\n`)
     if (oldApi.props) {
