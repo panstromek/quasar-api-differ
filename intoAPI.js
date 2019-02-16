@@ -43,7 +43,6 @@ const unmatchedTables =
 const singeMatchedTables = tables.filter(tableData => tableData.tags.length === 1)
 
 const apis = singeMatchedTables.map(tableData => {
-  const tag = tableData.tags[0]
   const {
     event: events = [],
     prop: props = [],
@@ -51,7 +50,7 @@ const apis = singeMatchedTables.map(tableData => {
   } = _.groupBy(tableData.table, row => row.element)
 
   return {
-    tag,
+    tag: tableData.tags[0],
     events,
     props,
     methods
@@ -61,13 +60,15 @@ const apis = singeMatchedTables.map(tableData => {
 let fullAPIs = Object
   .entries(_.groupBy(apis, api => api.tag.name))
   .map(([tag, apis]) => {
-    const events = apis.map(api => api.events).flat(1)
-    const props = apis.map(api => api.props).flat(1)
-    const methods = apis.map(api => api.methods).flat(1)
-    const hasDuplicates2 = (hasDuplicates(events, 'event', tag) ||
-      hasDuplicates(props, 'prop', tag) ||
-      hasDuplicates(methods, 'method', tag))
-    return { tag, events, props, methods, hasDuplicates: hasDuplicates2 }
+    return {
+      tag,
+      events: apis.map(api => api.events).flat(1),
+      props: apis.map(api => api.props).flat(1),
+      methods: apis.map(api => api.methods).flat(1),
+      hasDuplicates: (hasDuplicates(apis.map(api => api.events).flat(1), 'event', tag) ||
+        hasDuplicates(apis.map(api => api.props).flat(1), 'prop', tag) ||
+        hasDuplicates(apis.map(api => api.methods).flat(1), 'method', tag))
+    }
   })
 const nonProblematic =
   fullAPIs
