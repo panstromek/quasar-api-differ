@@ -3,7 +3,7 @@ const _ = require('lodash')
 const { parseTable } = require('./old-docs-parser/table')
 
 const { matchTag } = require('./old-docs-parser/tag-matcher')
-const kebabToPascal = require('./utils/casing').kebabToPascal
+const { kebabToPascal } = require('./utils/casing')
 const { parseVeturTags } = require('./old-docs-parser/vetur')
 const { intoTableMetaObjects } = require('./old-docs-parser/file')
 
@@ -40,22 +40,23 @@ const unmatchedTables =
   tables
     .filter(tableData => tableData.tags.length === 0) /// TODO try to lookup missing tags/attrs in unmatched tables (works only for props) (icon)
 
-const singeMatchedTables = tables.filter(tableData => tableData.tags.length === 1)
+const singeMatchAPIs =
+  tables
+    .filter(tableData => tableData.tags.length === 1)
+    .map(tableData => {
+      const {
+        event: events = [],
+        prop: props = [],
+        method: methods = []
+      } = _.groupBy(tableData.table, row => row.element)
 
-const singeMatchAPIs = singeMatchedTables.map(tableData => {
-  const {
-    event: events = [],
-    prop: props = [],
-    method: methods = []
-  } = _.groupBy(tableData.table, row => row.element)
-
-  return {
-    tag: tableData.tags[0],
-    events,
-    props,
-    methods
-  }
-})
+      return {
+        tag: tableData.tags[0],
+        events,
+        props,
+        methods
+      }
+    })
 
 let fullAPIs = Object
   .entries(_.groupBy(singeMatchAPIs, api => api.tag.name))
