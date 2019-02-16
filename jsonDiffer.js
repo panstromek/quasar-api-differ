@@ -39,7 +39,7 @@ function fnFormat (name, params = {}) {
 }
 
 function resolveDesc (oldApi, newApi) {
-  return oldApi.desc === newApi.desc && `   - BEFORE: ${oldApi.desc}\n   - AFTER: ${newApi.desc}\n` || ''
+  return (oldApi.desc === newApi.desc && `   - BEFORE: ${oldApi.desc}\n   - AFTER: ${newApi.desc}\n`) || ''
 }
 
 function diffAPIs (oldApi = {}, newApi = {}, diffFn, formatNewFn) {
