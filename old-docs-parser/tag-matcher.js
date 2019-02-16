@@ -5,9 +5,10 @@ module.exports = {
    *
    * @param tableData
    * @param tags
+   * @param log
    * @return {{headers: Array, file: *, filename: *, rows: Array, tags: Array }[]}
    */
-  matchTag (tableData, tags) {
+  matchTag (tableData, tags, log = (_ => {})) {
     const { filename, headers, table, file } = tableData
     tableData.tags = []
 
@@ -20,8 +21,8 @@ module.exports = {
       return tableData
     }
     if (tagsInInstallationPart.length === 0) {
-      console.log()
-      console.log(filename + ' - nothing in installation part for ' + (table.map(row => row.name)))
+      log()
+      log(filename + ' - nothing in installation part for ' + (table.map(row => row.name)))
       return tableData
     }
 
@@ -35,12 +36,12 @@ module.exports = {
       return tableData
     }
     if (tagsInHeader.length === 0) {
-      console.log()
-      console.log(filename + ' - nothing in header for ' + (table.map(row => row.name)))
+      log()
+      log(filename + ' - nothing in header for ' + (table.map(row => row.name)))
       return tableData
     }
-    console.log()
-    console.log(`${filename} -  multiple tags for header (${lastHeader}) - ${tagsInHeader.map(t => t.pascalName)}`)
+    log()
+    log(`${filename} -  multiple tags for header (${lastHeader}) - ${tagsInHeader.map(t => t.pascalName)}`)
     if (tagsInHeader.length) {
       tableData.tags.push(...tagsInHeader)
       return tableData

@@ -64,7 +64,7 @@ const tables = oldFileNames
   .flat(1)
   .map(tableData => parseTable(tableData))
   .filter(tableData => tableData.table.length) // filter empty (unparsed) tables
-  .map(tableData => matchTag(tableData, tags))
+  .map(tableData => matchTag(tableData, tags, console.log))
 
 const unmatchedTables =
   tables
