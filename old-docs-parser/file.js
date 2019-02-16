@@ -8,7 +8,7 @@ module.exports = {
    * @param filename
    * @return {{headers: Array, file: *, filename: *, rows: Array}[]}
    */
-  intoTableMetaObjects (file, filename) {
+  parseDocsFile (file, filename) {
     const tables = [{
       headers: [],
       rows: [],
@@ -38,6 +38,7 @@ module.exports = {
       })
     return tables.filter(table => table.rows.length > 0)
   },
+
   parseInstallationSection (file) {
     return file.split('\n#')
       .filter(part => part.toLowerCase().includes('install'))

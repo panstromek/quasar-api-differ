@@ -5,7 +5,7 @@ const { parseTable } = require('./old-docs-parser/table')
 const { matchTag } = require('./old-docs-parser/tag-matcher')
 const { kebabToPascal } = require('./utils/casing')
 const { parseVeturTags } = require('./old-docs-parser/vetur')
-const { intoTableMetaObjects } = require('./old-docs-parser/file')
+const { parseDocsFile } = require('./old-docs-parser/file')
 
 const tags = parseVeturTags(require('./node_modules/quasar-framework/dist/helper-json/quasar-tags'))
 
@@ -27,7 +27,7 @@ function hasDuplicates (elements, elementName, tagName) {
 
 const tables = oldFileNames
   .map(filename => ({ filename, file: fs.readFileSync(`${mdPath}/${filename}`).toString() }))
-  .map(({ filename, file }) => intoTableMetaObjects(file, filename))
+  .map(({ filename, file }) => parseDocsFile(file, filename))
   .flat(1)
   .map(tableData => ({
     ...tableData,

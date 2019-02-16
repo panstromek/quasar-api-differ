@@ -24,7 +24,7 @@ module.exports = {
       console.log(headers)
       console.log(rows)
       console.log()
-      throw new Error('mixed table')
+      throw new Error('mixed table - multiple types in one table')
     }
 
     return parsedRows.flat(1).filter(p => p)
