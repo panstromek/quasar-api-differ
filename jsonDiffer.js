@@ -45,7 +45,7 @@ function resolveDesc (oldApi, newApi) {
   return oldApi.desc === newApi.desc && `   - BEFORE: ${oldApi.desc}\n   - AFTER: ${newApi.desc}\n` || ''
 }
 
-function diffAPIs (oldApi, newApi = {}, diffFn, formatNewFn) {
+function diffAPIs (oldApi = {}, newApi = {}, diffFn, formatNewFn) {
   return Object.entries(oldApi)
     .map(diffFn).filter(r => r)
     .concat(
@@ -109,29 +109,40 @@ function desuffix (filename) {
   return filename.substring(0, filename.length - 5)
 }
 
-Object.entries(veturAPIs)
-  .map(([name, veturApi]) => {
-    const filename = name + '.json'
-    const oldApi = mergeApis(veturApi,
-      fs.existsSync(`./.json-api/${filename}`) ?
-        require(`./.json-api/${filename}`) : {})
-    const newApi = fs.existsSync(`${newApiDir}/${filename}`) && require(`${newApiDir}/${filename}`)
-    return { oldApi, newApi, name }
-  })
+fs.readdirSync(`${newApiDir}`)
+  .map(desuffix)
+  .filter(name => !veturAPIs[name])
+  .map(name => ({ newApi: require(`${newApiDir}/${name}.json`), name }))
+  .filter(api => api.newApi.type === 'component')
+  .concat(Object.entries(veturAPIs)
+    .map(([name, veturApi]) => {
+      const filename = name + '.json'
+      const oldApi = mergeApis(veturApi,
+        fs.existsSync(`./.json-api/${filename}`) ?
+          require(`./.json-api/${filename}`) : {})
+      const newApi = fs.existsSync(`${newApiDir}/${filename}`) && require(`${newApiDir}/${filename}`)
+      return { oldApi, newApi, name }
+    }))
   .forEach(({ oldApi, newApi, name }) => {
     if (!newApi) {
       return write(`## ${name}  - removed\n   - ${replacements[name]}\n`)
     }
-    write(`\n## ${name}\n`)
-    if (oldApi.props) {
+    if (oldApi) {
+      write(`\n## ${name}\n`)
+    } else {
+      write(`\n## ${name} - **NEW**\n`)
+      oldApi = {}
+    }
+
+    if (true) {
       const diff = diffProps(oldApi.props, newApi.props).trimRight()
       if (diff) {write(`#### Props\n` + diff + '\n')}
     }
-    if (oldApi.events) {
+    if (true) {
       const diff = diffEvents(oldApi.events, newApi.events).trimRight()
       if (diff) {write(`#### Events\n` + diff + '\n') }
     }
-    if (oldApi.methods) {
+    if (true) {
       const diff = diffMethods(oldApi.methods, newApi.methods).trimRight()
       if (diff) {write(`#### Methods\n` + diff + '\n')}
     }
