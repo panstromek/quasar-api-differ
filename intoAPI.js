@@ -44,10 +44,12 @@ const singeMatchedTables = tables.filter(tableData => tableData.tags.length === 
 
 const apis = singeMatchedTables.map(tableData => {
   const tag = tableData.tags[0]
-  const { event: events = [], prop: props = [], method: methods = [] } = _.groupBy(tableData.table, row => row.element)
-  if ([events, props, methods].filter(a => a.length).length !== 1) {
-    console.log(tag + ' has mixed table')
-  }
+  const {
+    event: events = [],
+    prop: props = [],
+    method: methods = []
+  } = _.groupBy(tableData.table, row => row.element)
+
   return {
     tag,
     events,
