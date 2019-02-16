@@ -1,37 +1,11 @@
 const fs = require('fs')
 const _ = require('lodash')
+const { parseTable } = require('./old-docs-parser/table')
 
-const rowParsers = require('./old-docs-parser/table-row')
 const { matchTag } = require('./old-docs-parser/tag-matcher')
 const kebabToPascal = require('./utils/casing').kebabToPascal
 const { parseVeturTags } = require('./old-docs-parser/vetur')
-const { parseInstallationSection } = require('./old-docs-parser/file')
 const { intoTableMetaObjects } = require('./old-docs-parser/file')
-const tableDataTypes = ['event', 'method', 'prop', 'modifier', 'class', 'injection']
-
-function parseTable ({ rows, filename, headers, file }) {
-  let tableHeader = rows[0].toLowerCase()
-  let lastHeader = (headers[headers.length - 1] || '').toLowerCase()
-
-  const typeCandidates = tableDataTypes.filter(type => tableHeader.includes(type) || lastHeader.includes(type))
-
-  const table = rows.map(row => {
-    let parsedRows = typeCandidates.map(type => rowParsers[type](row)).filter(row => row)
-    if (parsedRows.length > 1) {
-      // TODO should I throw here or what?
-      console.log('multiple  parsers parsed row: ' + row)
-    }
-    return parsedRows
-  }).flat(1).filter(p => p)
-
-  return {
-    rows,
-    filename,
-    headers,
-    table,
-    file
-  }
-}
 
 const tags = parseVeturTags(require('./node_modules/quasar-framework/dist/helper-json/quasar-tags'))
 
@@ -62,7 +36,12 @@ const tables = oldFileNames
   .map(filename => ({ filename, file: fs.readFileSync(`${mdPath}/${filename}`).toString() }))
   .map(({ filename, file }) => intoTableMetaObjects(file, filename))
   .flat(1)
-  .map(tableData => parseTable(tableData))
+  .map(tableData => {
+    return {
+      ...tableData,
+      table: parseTable(tableData)
+    }
+  })
   .filter(tableData => tableData.table.length) // filter empty (unparsed) tables
   .map(tableData => matchTag(tableData, tags, console.log))
 
