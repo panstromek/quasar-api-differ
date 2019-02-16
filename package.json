@@ -6,6 +6,7 @@
   "dependencies": {
     "lodash": "^4.17.11",
     "quasar": "^1.0.0-beta.1",
+    "quasar-framework": "^0.17.19",
     "quasar-old-docs": "github:quasarframework/quasar-framework.org"
   },
   "devDependencies": {

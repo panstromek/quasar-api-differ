@@ -3381,6 +3381,11 @@ qs@6.2.3:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.2.3.tgz#1cfcb25c10a9b2b483053ff39f5dfc9233908cfe"
   integrity sha1-HPyyXBCpsrSDBT/zn138kjOQjP4=
 
+quasar-framework@^0.17.19:
+  version "0.17.19"
+  resolved "https://registry.yarnpkg.com/quasar-framework/-/quasar-framework-0.17.19.tgz#4aaa059a631e6961dd6e607e320792cfc2b31a36"
+  integrity sha512-22DkG2ejw7X6RkdTY36ETji6tIkAjVq7rrYiOMYQ8VrXBQaskG2Ey41qyZZ9SfPC1p7MdxF1apbsJDedsuPV2A==
+
 "quasar-old-docs@github:quasarframework/quasar-framework.org":
   version "0.0.0"
   resolved "https://codeload.github.com/quasarframework/quasar-framework.org/tar.gz/9170691ab2ef09ec2a7a6b358fec489b1472ff74"
