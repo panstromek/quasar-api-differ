@@ -2,6 +2,7 @@ const fs = require('fs')
 const _ = require('lodash')
 
 const rowParsers = require('./old-docs-parser/table-row')
+const { matchTag } = require('./old-docs-parser/tag-matcher')
 const kebabToPascal = require('./utils/casing').kebabToPascal
 const { parseVeturTags } = require('./old-docs-parser/vetur')
 const { parseInstallationSection } = require('./old-docs-parser/file')
@@ -37,54 +38,6 @@ const tags = parseVeturTags(require('./node_modules/quasar-framework/dist/helper
 const mdPath = 'node_modules/quasar-old-docs/source/components'
 const oldFileNames = fs.readdirSync(mdPath)
 
-/**
- *
- * @param tableData
- * @param tags
- * @return {{headers: Array, file: *, filename: *, rows: Array, tags: Array }[]}
- */
-function matchTag (tableData, tags) {
-  const { filename, headers, table, file } = tableData
-  tableData.tags = []
-
-  const installationPart = parseInstallationSection(file)
-  const tagsInInstallationPart = tags.filter(tag => {
-    return installationPart.includes(`'${tag.pascalName}'`)
-  })
-  if (tagsInInstallationPart.length === 1) {
-    tableData.tags.push(tagsInInstallationPart[0])
-    return tableData
-  }
-  if (tagsInInstallationPart.length === 0) {
-    console.log()
-    console.log(filename + ' - nothing in installation part for ' + (table.map(row => row.name)))
-    return tableData
-  }
-
-  let lastHeader = headers[headers.length - 1]
-  const lastHeaderWords = lastHeader.replace(/\W/g, ' ').split(' ').map(word => word.trim()).filter(w => w)
-  const tagsInHeader = tagsInInstallationPart.filter(tag => {
-    return lastHeaderWords.includes(tag.pascalName)
-  })
-  if (tagsInHeader.length === 1) {
-    tableData.tags.push(tagsInHeader[0])
-    return tableData
-  }
-  if (tagsInHeader.length === 0) {
-    console.log()
-    console.log(filename + ' - nothing in header for ' + (table.map(row => row.name)))
-    return tableData
-  }
-  console.log()
-  console.log(`${filename} -  multiple tags for header (${lastHeader}) - ${tagsInHeader.map(t => t.pascalName)}`)
-  if (tagsInHeader.length) {
-    tableData.tags.push(...tagsInHeader)
-    return tableData
-  }
-
-  return tableData
-}
-
 function hasDuplicates (elements, elementName, tagName) {
   const duplicates = Object.values(_.groupBy(elements, el => el.name))
     .filter(els => els.length > 1).flat(1)
@@ -116,13 +69,6 @@ const tables = oldFileNames
 const unmatchedTables =
   tables
     .filter(tableData => tableData.tags.length === 0) /// TODO try to lookup missing tags/attrs in unmatched tables (works only for props) (icon)
-
-//
-// tags.map(tag => {
-//   const events = getElementsFromTable('event', tag)
-//   const props = getElementsFromTable('prop', tag)
-//   const methods = getElementsFromTable('method', tag)
-// })
 
 const singeMatchedTables = tables.filter(tableData => tableData.tags.length === 1)
 
