@@ -36,12 +36,10 @@ const tables = oldFileNames
   .map(filename => ({ filename, file: fs.readFileSync(`${mdPath}/${filename}`).toString() }))
   .map(({ filename, file }) => intoTableMetaObjects(file, filename))
   .flat(1)
-  .map(tableData => {
-    return {
-      ...tableData,
-      table: parseTable(tableData)
-    }
-  })
+  .map(tableData => ({
+    ...tableData,
+    table: parseTable(tableData)
+  }))
   .filter(tableData => tableData.table.length) // filter empty (unparsed) tables
   .map(tableData => matchTag(tableData, tags, console.log))
 
