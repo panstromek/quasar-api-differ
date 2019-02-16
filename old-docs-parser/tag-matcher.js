@@ -12,6 +12,16 @@ module.exports = {
     const { filename, headers, table, file } = tableData
     tableData.tags = []
 
+    const matchByAttrs = tags.filter(tag => {
+      return tableMatchesAttributes(table, tag.attributes)
+    })
+
+    if (matchByAttrs.length === 1) {
+      log('matched by attrs for ' + matchByAttrs[0].tag)
+      tableData.tags.push(matchByAttrs[0])
+      return tableData
+    }
+
     const installationPart = parseInstallationSection(file)
     const tagsInInstallationPart = tags.filter(tag => {
       return installationPart.includes(`'${tag.pascalName}'`)
@@ -48,4 +58,8 @@ module.exports = {
     }
     return tableData
   }
+}
+
+function tableMatchesAttributes (table, attributes) { // TODO match type, too?
+  return table.every(row => row.element === 'prop' && attributes.includes(row.name))
 }
