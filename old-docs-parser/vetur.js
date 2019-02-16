@@ -7,8 +7,8 @@ function transformProp (veturAttr) {
   }
   const type = veturAttr.type.split('|').map(kebabToPascal)
   return {
-    ...veturAttr,
-    type: type.length === 1 ? type[0] : type
+    type: type.length === 1 ? type[0] : type,
+    desc: veturAttr.description
   }
 }
 
