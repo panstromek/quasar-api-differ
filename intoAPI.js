@@ -48,11 +48,6 @@ const singeMatchAPIs =
       }
     })
 
-const withoutDuplicates = deduplicateAllApis(singeMatchAPIs)
-
-console.log('Non problematic:')
-console.log(withoutDuplicates.map(t => t.tag))
-
 console.log()
 console.log()
 console.log('Unmatched Tables:')
@@ -69,4 +64,4 @@ if (!fs.existsSync('.json-api')) {
   fs.mkdirSync('.json-api')
 }
 
-intoJSON(withoutDuplicates).map(({ tag, api }) => write(tag, api))
+intoJSON(deduplicateAllApis(singeMatchAPIs)).map(({ tag, api }) => write(tag, api))
