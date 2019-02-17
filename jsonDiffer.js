@@ -15,12 +15,6 @@ const target = 'api-diff.md'
 
 const replacements = _.fromPairs(require('./v1-replacements.json'))
 
-fs.writeFileSync(target, `# Quasar API XOR (old XOR new)
-This is generated - information may be incorrect.
-If you find problem, report it please.
-
-`)
-
 function desuffix (filename) {
   return filename.substring(0, filename.length - 5)
 }
@@ -29,13 +23,15 @@ function load (filename) {
   return JSON.parse(fs.readFileSync(`./.json-api/${filename}`).toString())
 }
 
+const oldAPIs = fs.readdirSync('./.json-api')
+
 const allAPIs =
   fs.readdirSync(`${newApiDir}`)
     .map(desuffix)
     .filter(name => !veturAPIs[name])
     .map(name => ({ newApi: require(`${newApiDir}/${name}.json`), name }))
     .filter(api => api.newApi.type === 'component')
-    .concat(fs.readdirSync('./.json-api').sort()
+    .concat(oldAPIs.sort()
       .map(filename => {
         return {
           oldApi: load(filename),
@@ -44,6 +40,14 @@ const allAPIs =
         }
       }))
 
-fs.appendFileSync(target, generateMarkdownDiff(allAPIs, replacements))
+const diffHeader = `# Quasar API XOR (old XOR new)
+This is generated - information may be incorrect.
+If you find problem, report it please.`
+
+const mdDiff = `${diffHeader}
+
+${generateMarkdownDiff(allAPIs, replacements)}`
+
+fs.writeFileSync(target, mdDiff)
 
 module.exports = function () {}
