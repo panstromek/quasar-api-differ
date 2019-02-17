@@ -7,20 +7,14 @@ const ignoredFiles = ['introduction-for-beginners']
 
 const mdPath = 'node_modules/quasar-old-docs/source/components'
 
-function write (tag, api) {
-  fs.writeFileSync(`.json-api/${kebabToPascal(`q-${tag}`)}.json`, JSON.stringify(api))
-}
-
-function notIgnored (filename) {
-  return !ignoredFiles.some(i => filename.includes(i))
-}
-
 const metaFiles = fs.readdirSync(mdPath)
-  .filter(notIgnored)
+  .filter(filename => !ignoredFiles.some(ignored => filename.includes(ignored)))
   .map(filename => ({ filename, file: fs.readFileSync(`${mdPath}/${filename}`).toString() }))
 
 if (!fs.existsSync('.json-api')) {
   fs.mkdirSync('.json-api')
 }
 
-parse(metaFiles, veturTags).map(({ tag, api }) => write(tag, api))
+parse(metaFiles, veturTags)
+  .map(({ tag, api }) =>
+    fs.writeFileSync(`.json-api/${kebabToPascal(`q-${tag}`)}.json`, JSON.stringify(api)))

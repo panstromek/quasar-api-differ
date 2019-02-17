@@ -111,6 +111,7 @@ fs.readdirSync(`${newApiDir}`)
   .filter(name => !veturAPIs[name])
   .map(name => ({ newApi: require(`${newApiDir}/${name}.json`), name }))
   .filter(api => api.newApi.type === 'component')
+
   .concat(Object.entries(veturAPIs)
     .map(([name, veturApi]) => {
       const filename = name + '.json'
@@ -120,6 +121,7 @@ fs.readdirSync(`${newApiDir}`)
       const newApi = fs.existsSync(`${newApiDir}/${filename}`) && require(`${newApiDir}/${filename}`)
       return { oldApi, newApi, name }
     }))
+
   .forEach(({ oldApi, newApi, name }) => {
     if (!newApi) {
       return write(`## ${name}  - removed\n   - ${replacements[name]}\n`)
