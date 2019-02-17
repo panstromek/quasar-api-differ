@@ -17,7 +17,15 @@ function mergeRows (rows) {
 }
 
 const me = module.exports = {
-  mergeRows,
+  /**
+   * TODO use this to report duplicates
+   * @param elements
+   * @return {{name, desc}[]}
+   */
+  getDuplicates (elements) {
+    return Object.values(_.groupBy(elements, el => el.name))
+      .filter(els => els.length > 1).flat(1)
+  },
   mergeDuplicatesByName (table, headers) {
     return Object.entries(_.groupBy(table, r => r.name))
       .map(([name, rows]) => {

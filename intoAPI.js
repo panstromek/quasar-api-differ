@@ -16,16 +16,6 @@ function write (tag, api) {
   fs.writeFileSync(`.json-api/${kebabToPascal(`q-${tag}`)}.json`, JSON.stringify(api))
 }
 
-/**
- * TODO use this to report duplicates
- * @param elements
- * @return {{name, desc}[]}
- */
-function getDuplicates (elements) {
-  return Object.values(_.groupBy(elements, el => el.name))
-    .filter(els => els.length > 1).flat(1)
-}
-
 function notIgnored (filename) {
   return !ignoredFiles.some(i => filename.includes(i))
 }
