@@ -25,7 +25,14 @@ function hasDuplicates (elements, elementName, tagName) {
   return false
 }
 
+function notIgnored (filename) {
+  return ![
+    'introduction-for-beginners'
+  ].some(i => filename.includes(i))
+}
+
 const tables = oldFileNames
+  .filter(notIgnored)
   .map(filename => ({ filename, file: fs.readFileSync(`${mdPath}/${filename}`).toString() }))
   .map(({ filename, file }) => parseDocsFile(file, filename))
   .flat(1)
