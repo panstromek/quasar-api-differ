@@ -1,8 +1,8 @@
 const fs = require('fs')
 const _ = require('lodash')
+const { deduplicateAllApis } = require('./old-docs-parser/parser')
 const { parseFilesToMetaTables } = require('./old-docs-parser/parser')
 const { intoJSON } = require('./old-docs-parser/into-json')
-const { mergeDuplicatesByName } = require('./old-docs-parser/table')
 const { kebabToPascal } = require('./utils/casing')
 const { parseVeturTags } = require('./old-docs-parser/vetur')
 
@@ -48,16 +48,7 @@ const singeMatchAPIs =
       }
     })
 
-const withoutDuplicates = Object
-  .entries(_.groupBy(singeMatchAPIs, api => api.tag.name))
-  .map(([tag, apis]) => {
-    return {
-      tag,
-      events: mergeDuplicatesByName(apis.map(api => api.events).flat(1)),
-      props: mergeDuplicatesByName(apis.map(api => api.props).flat(1)),
-      methods: mergeDuplicatesByName(apis.map(api => api.methods).flat(1))
-    }
-  })
+const withoutDuplicates = deduplicateAllApis(singeMatchAPIs)
 
 console.log('Non problematic:')
 console.log(withoutDuplicates.map(t => t.tag))
