@@ -29,6 +29,11 @@ function paramsToJSON (params) {
   return params.reduce((jsonParams, param) => ({ ...jsonParams, [param]: {} }), {})
 }
 
+/**
+ * TODO use this to report duplicates
+ * @param elements
+ * @return {any[]}
+ */
 function getDuplicates (elements) {
   return Object.values(_.groupBy(elements, el => el.name))
     .filter(els => els.length > 1).flat(1)
@@ -52,7 +57,7 @@ const tables = oldFileNames
 
 const unmatchedTables =
   tables
-    .filter(tableData => tableData.tags.length === 0) /// TODO try to lookup missing tags/attrs in unmatched tables (works only for props) (icon)
+    .filter(tableData => tableData.tags.length === 0) /// TODO try to lookup missing tags/attrs in unmatched tables (works only for props)
 
 const singeMatchAPIs =
   tables
@@ -72,7 +77,7 @@ const singeMatchAPIs =
       }
     })
 
-let fullAPIs = Object
+const withoutDuplicates = Object
   .entries(_.groupBy(singeMatchAPIs, api => api.tag.name))
   .map(([tag, apis]) => {
     return {
@@ -90,8 +95,6 @@ let fullAPIs = Object
       methods
     }
   })
-
-const withoutDuplicates = fullAPIs
 
 console.log('Non problematic:')
 console.log(withoutDuplicates.map(t => t.tag))
