@@ -1,5 +1,9 @@
 const { parseInstallationSection } = require('./file')
 
+function tableType (table = [{}]) {
+  return table[0].element
+}
+
 module.exports = {
   /**
    *
@@ -21,7 +25,9 @@ module.exports = {
       tableData.tags.push(matchByAttrs[0])
       return tableData
     }
-
+    if (tableType(table) === 'prop') {
+      tags = matchByAttrs
+    }
     const installationPart = parseInstallationSection(file)
     const tagsInInstallationPart = tags.filter(tag => {
       return installationPart.includes(`'${tag.pascalName}'`)

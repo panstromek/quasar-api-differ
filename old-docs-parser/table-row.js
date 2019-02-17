@@ -1,6 +1,6 @@
 module.exports = {
   event (row) {
-    const match = row.match(/\|\s*`@([:\w-_]+)\(?([\w-_, ]*)\)?`\s*\|\s*([0-9\w-_ (),.]*)\|/)
+    const match = row.match(/\|\s*`@([:\w-_]+)\(?([\w-_, ]*)\)?`\s*\|(.*)\|/)
     if (match) {
       return {
         element: 'event',
@@ -11,7 +11,7 @@ module.exports = {
     }
   },
   method (row) {
-    const match = row.match(/\|\s*`([\w-_]+)\(([\w-_, ]*)\)`\s*\|\s*([0-9\w-_ (),.]*)\|/)
+    const match = row.match(/\|\s*`([\w-_]+)\(([\w-_, ]*)\)`\s*\|(.*)\|/)
     if (match) {
       return {
         element: 'method',
@@ -27,7 +27,6 @@ module.exports = {
       .filter(part => part)
 
     if (parts.length === 3 && parts[0].startsWith('`') && parts[0].endsWith('`')) {
-
       return {
         element: 'prop',
         name: parts[0].substring(1, parts[0].length - 1),
