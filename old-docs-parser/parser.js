@@ -3,11 +3,26 @@ const { parseTable } = require('./table')
 const { matchTag } = require('./tag-matcher')
 const { parseDocsFile } = require('./file')
 const _ = require('lodash')
+const { intoJSONAPI } = require('./vetur')
+const { mergeApis } = require('../utils/mergeAPIs')
+const { kebabToPascal } = require('../utils/casing')
 
 const { intoJSON } = require('./into-json')
 const { parseVeturTags } = require('./vetur')
 
 const me = module.exports = {
+
+  createJSONAPI (oldAttrs, metaFiles, oldTags) {
+    const finalAPIS = { ...intoJSONAPI(oldTags, oldAttrs) }
+
+    me.parse(metaFiles, oldTags)
+      .map(({ tag, api }) => {
+        const name = kebabToPascal(`q-${tag}`)
+        const veturApi = finalAPIS[name] || {}
+        finalAPIS[name] = mergeApis(veturApi, api)
+      })
+    return finalAPIS
+  },
 
   parse (metaFiles, veturTags) {
     return intoJSON(me.deduplicateAllApis(me.parseFilesToMetaTables(metaFiles, parseVeturTags(veturTags))
