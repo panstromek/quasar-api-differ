@@ -1,11 +1,33 @@
-import { groupBy } from 'lodash'
-
 const { mergeDuplicatesByName } = require('./table')
 const { parseTable } = require('./table')
 const { matchTag } = require('./tag-matcher')
 const { parseDocsFile } = require('./file')
+const _ = require('lodash')
 
-module.exports = {
+const { intoJSON } = require('./into-json')
+const { parseVeturTags } = require('./vetur')
+
+const me = module.exports = {
+
+  parse (metaFiles, veturTags) {
+    return intoJSON(me.deduplicateAllApis(me.parseFilesToMetaTables(metaFiles, parseVeturTags(veturTags))
+      .filter(tableData => tableData.tags.length === 1)
+      .map(tableData => {
+        const {
+          event: events = [],
+          prop: props = [],
+          method: methods = []
+        } = _.groupBy(tableData.table, row => row.element)
+
+        return {
+          tag: tableData.tags[0],
+          events,
+          props,
+          methods
+        }
+      })))
+  },
+
   parseFilesToMetaTables (metaFiles, veturTags) {
     return metaFiles
       .map(({ filename, file }) => parseDocsFile(file, filename))
@@ -20,7 +42,7 @@ module.exports = {
 
   deduplicateAllApis (singeMatchAPIs) {
     return Object
-      .entries(groupBy(singeMatchAPIs, api => api.tag.name))
+      .entries(_.groupBy(singeMatchAPIs, api => api.tag.name))
       .map(([tag, apis]) => {
         return {
           tag,
