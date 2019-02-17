@@ -87,14 +87,6 @@ const withoutDuplicates = Object
       methods: mergeDuplicatesByName(apis.map(api => api.methods).flat(1))
     }
   })
-  .map(({ tag, events, props, methods }) => {
-    return {
-      tag,
-      events,
-      props,
-      methods
-    }
-  })
 
 console.log('Non problematic:')
 console.log(withoutDuplicates.map(t => t.tag))
