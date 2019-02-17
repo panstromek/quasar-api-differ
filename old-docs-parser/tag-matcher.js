@@ -69,5 +69,5 @@ module.exports = {
 }
 
 function tableMatchesAttributes (table, attributes) { // TODO match type, too?
-  return table.every(row => row.element === 'prop' && attributes.includes(row.name))
+  return (table.filter(row => row.element === 'prop' && attributes.includes(row.name)).length / table.length) > 0.7 // this just an arbitrary chosen precision constant that works
 }
