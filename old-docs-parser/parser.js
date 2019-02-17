@@ -11,11 +11,17 @@ const { intoJSON } = require('./into-json')
 const { parseVeturTags } = require('./vetur')
 
 const me = module.exports = {
+  /**
+   *
+   * @param {{}} veturTags
+   * @param {{}} veturAttributes
+   * @param {{filename:String, file: String}[]} metaFiles
+   * @return {{}}
+   */
+  createJSONAPI (veturTags, veturAttributes, metaFiles) {
+    const finalAPIS = { ...intoJSONAPI(veturTags, veturAttributes) }
 
-  createJSONAPI (oldAttrs, metaFiles, oldTags) {
-    const finalAPIS = { ...intoJSONAPI(oldTags, oldAttrs) }
-
-    me.parse(metaFiles, oldTags)
+    me.parse(metaFiles, veturTags)
       .map(({ tag, api }) => {
         const name = kebabToPascal(`q-${tag}`)
         const veturApi = finalAPIS[name] || {}

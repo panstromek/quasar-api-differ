@@ -13,7 +13,7 @@ if (!fs.existsSync('.json-api')) {
   fs.mkdirSync('.json-api')
 }
 
-const finalAPIS = createJSONAPI(oldAttrs, metaFiles, oldTags)
+const finalAPIS = createJSONAPI(oldTags, oldAttrs, metaFiles)
 
 Object.entries(finalAPIS)
   .map(([name, veturApi]) => {
