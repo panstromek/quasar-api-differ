@@ -32,18 +32,21 @@ function desuffix (filename) {
   return filename.substring(0, filename.length - 5)
 }
 
-fs.readdirSync(`${newApiDir}`)
+const newComponentApis = fs.readdirSync(`${newApiDir}`)
   .map(desuffix)
   .filter(name => !veturAPIs[name])
   .map(name => ({ newApi: require(`${newApiDir}/${name}.json`), name }))
   .filter(api => api.newApi.type === 'component')
 
+newComponentApis
   .concat(Object.entries(veturAPIs)
     .map(([name, veturApi]) => {
       const filename = name + '.json'
+
       const oldApi = mergeApis(veturApi,
         fs.existsSync(`./.json-api/${filename}`)
           ? require(`./.json-api/${filename}`) : {})
+
       const newApi = fs.existsSync(`${newApiDir}/${filename}`) && require(`${newApiDir}/${filename}`)
       return { oldApi, newApi, name }
     }))
@@ -72,3 +75,5 @@ fs.readdirSync(`${newApiDir}`)
       write(`#### Methods\n` + methodDiff + '\n')
     }
   })
+
+module.exports = function () {}
