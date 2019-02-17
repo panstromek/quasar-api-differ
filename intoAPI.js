@@ -18,22 +18,16 @@ if (!fs.existsSync('.json-api')) {
   fs.mkdirSync('.json-api')
 }
 
-const veturAPIs = { ...intoJSONAPI(oldTags, oldAttrs) }
+const finalAPIS = { ...intoJSONAPI(oldTags, oldAttrs) }
 
-const parsed = parse(metaFiles, veturTags)
-parsed
+parse(metaFiles, veturTags)
   .map(({ tag, api }) => {
     const name = kebabToPascal(`q-${tag}`)
-    const filename = name + '.json'
-
-    const veturApi = veturAPIs[name] || {}
-    delete veturAPIs[name]
-
-    const oldApi = mergeApis(veturApi, api)
-    fs.writeFileSync(`.json-api/${filename}`, JSON.stringify(oldApi))
+    const veturApi = finalAPIS[name] || {}
+    finalAPIS[name] = mergeApis(veturApi, api)
   })
 
-Object.entries(veturAPIs)
+Object.entries(finalAPIS)
   .map(([name, veturApi]) => {
     fs.writeFileSync(`.json-api/${(name)}.json`, JSON.stringify(veturApi))
   })
