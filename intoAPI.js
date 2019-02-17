@@ -9,6 +9,7 @@ const ignoredFiles = ['introduction-for-beginners']
 const oldTags = require('./node_modules/quasar-framework/dist/helper-json/quasar-tags')
 const oldAttrs = require('./node_modules/quasar-framework/dist/helper-json/quasar-attributes')
 const mdPath = 'node_modules/quasar-old-docs/source/components'
+const _ = require('lodash')
 
 const veturAPIs = intoJSONAPI(oldTags, oldAttrs)
 
@@ -21,14 +22,20 @@ if (!fs.existsSync('.json-api')) {
 }
 
 parse(metaFiles, veturTags)
-  .map(({ tag, api }) =>
-    fs.writeFileSync(`.json-api/${kebabToPascal(`q-${tag}`)}.json`, JSON.stringify(api)))
+  .map(({ tag, api }) => {
+    return fs.writeFileSync(`.json-api/${kebabToPascal(`q-${tag}`)}.json`, JSON.stringify(api))
+  })
+
+function load (filename) {
+  return JSON.parse(fs.readFileSync(`./.json-api/${filename}`).toString())
+}
 
 Object.entries(veturAPIs)
   .map(([name, veturApi]) => {
     const filename = name + '.json'
+
     const oldApi = mergeApis(veturApi,
       fs.existsSync(`./.json-api/${filename}`)
-        ? require(`./.json-api/${filename}`) : {})
+        ? load(filename) : {})
     fs.writeFileSync(`.json-api/${filename}`, JSON.stringify(oldApi))
   })

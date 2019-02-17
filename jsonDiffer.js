@@ -38,14 +38,17 @@ const newComponentApis = fs.readdirSync(`${newApiDir}`)
   .map(name => ({ newApi: require(`${newApiDir}/${name}.json`), name }))
   .filter(api => api.newApi.type === 'component')
 
+function load (filename) {
+  return JSON.parse(fs.readFileSync(`./.json-api/${filename}`).toString())
+}
+
 newComponentApis
   .concat(Object.entries(veturAPIs)
-    .map(([name, veturApi]) => {
+    .map(([name]) => {
       const filename = name + '.json'
 
-      const oldApi = mergeApis(veturApi,
-        fs.existsSync(`./.json-api/${filename}`)
-          ? require(`./.json-api/${filename}`) : {})
+      const oldApi = fs.existsSync(`./.json-api/${filename}`)
+        ? load(filename) : {}
 
       const newApi = fs.existsSync(`${newApiDir}/${filename}`) && require(`${newApiDir}/${filename}`)
       return { oldApi, newApi, name }
