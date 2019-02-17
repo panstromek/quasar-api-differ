@@ -1,7 +1,5 @@
 const fs = require('fs')
 const _ = require('lodash')
-const { arraySetEq } = require('./utils/eq')
-const { keyEqOrd } = require('./utils/eq')
 
 const { intoJSONAPI } = require('./old-docs-parser/vetur')
 
