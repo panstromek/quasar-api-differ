@@ -43,8 +43,8 @@ function load (filename) {
 }
 
 newComponentApis
-  .concat(Object.entries(veturAPIs)
-    .map(([name]) => {
+  .concat(Object.entries(veturAPIs).map(([name]) => name).sort()
+    .map((name) => {
       const filename = name + '.json'
 
       const oldApi = fs.existsSync(`./.json-api/${filename}`)
