@@ -10,7 +10,6 @@ const oldAttrs = require('./node_modules/quasar-framework/dist/helper-json/quasa
 const { diffMethods } = require('./diff-generator')
 const { diffEvents } = require('./diff-generator')
 const { diffProps } = require('./diff-generator')
-const { mergeApis } = require('./utils/mergeAPIs')
 
 const veturAPIs = intoJSONAPI(oldTags, oldAttrs)
 
@@ -43,15 +42,13 @@ function load (filename) {
 }
 
 newComponentApis
-  .concat(fs.readdirSync('./.json-api').map(desuffix).sort()
-    .map((name) => {
-      const filename = name + '.json'
-
-      const oldApi = fs.existsSync(`./.json-api/${filename}`)
-        ? load(filename) : {}
-
-      const newApi = fs.existsSync(`${newApiDir}/${filename}`) && require(`${newApiDir}/${filename}`)
-      return { oldApi, newApi, name }
+  .concat(fs.readdirSync('./.json-api').sort()
+    .map(filename => {
+      return {
+        oldApi: load(filename),
+        newApi: fs.existsSync(`${newApiDir}/${filename}`) && require(`${newApiDir}/${filename}`),
+        name: desuffix(filename)
+      }
     }))
 
   .forEach(({ oldApi, newApi, name }) => {
