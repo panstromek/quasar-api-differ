@@ -1,5 +1,6 @@
 const fs = require('fs')
 const _ = require('lodash')
+const { intoJSON } = require('./old-docs-parser/into-json')
 const { mergeDuplicatesByName } = require('./old-docs-parser/table')
 const { parseTable } = require('./old-docs-parser/table')
 
@@ -14,19 +15,8 @@ const ignoredFiles = ['introduction-for-beginners']
 const mdPath = 'node_modules/quasar-old-docs/source/components'
 const oldFileNames = fs.readdirSync(mdPath)
 
-function intoJSONAPIType (type) {
-  if (type.length === 1) {
-    return type[0]
-  }
-  return type
-}
-
 function write (tag, api) {
   fs.writeFileSync(`.json-api/${kebabToPascal(`q-${tag}`)}.json`, JSON.stringify(api))
-}
-
-function paramsToJSON (params) {
-  return params.reduce((jsonParams, param) => ({ ...jsonParams, [param]: {} }), {})
 }
 
 /**
@@ -107,34 +97,4 @@ if (!fs.existsSync('.json-api')) {
   fs.mkdirSync('.json-api')
 }
 
-withoutDuplicates.map(({ tag, events, props, methods }) => {
-  const jsonAPI = {
-    type: 'component'
-  }
-  if (events.length) {
-    jsonAPI.events = events.reduce((jsonEvents, { name, desc, params }) => ({
-      ...jsonEvents,
-      [name]: { desc, params: paramsToJSON(params) }
-    }), {})
-  }
-  if (props.length) {
-    jsonAPI.props = {}
-    props.forEach(({ name, type, desc }) => {
-      jsonAPI.props[name] = {
-        type: intoJSONAPIType(type),
-        desc
-      }
-    })
-  }
-  if (methods.length) {
-    jsonAPI.methods = {}
-    methods.forEach(({ name, params, desc }) => {
-      jsonAPI.methods[name] = {
-        params: paramsToJSON(params),
-        desc
-      }
-    })
-  }
-  return { tag, api: jsonAPI }
-})
-  .map(({ tag, api }) => write(tag, api))
+intoJSON(withoutDuplicates).map(({ tag, api }) => write(tag, api))
