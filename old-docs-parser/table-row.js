@@ -30,7 +30,7 @@ module.exports = {
       return {
         element: 'prop',
         name: parts[0].substring(1, parts[0].length - 1),
-        type: parts[1].split('/').map(param => param.trim()).filter(p => p),
+        type: parts[1].replace(/,/g, '/').split('/').map(param => param.trim()).filter(p => p),
         desc: parts[2]
       }
     }
