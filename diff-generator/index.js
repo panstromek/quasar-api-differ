@@ -2,6 +2,41 @@ const { arraySetEq } = require('../utils/eq')
 const { keyEqOrd } = require('../utils/eq')
 const me = module.exports = {
 
+  generateMarkdownDiff (allAPIs = [], replacements = {}) {
+    return allAPIs
+      .map(({ oldApi, newApi, name }) => {
+        if (!newApi) {
+          return (`## ${name}  - removed\n   - ${replacements[name]}\n`)
+        }
+        let res = ''
+
+        function write (data) {
+          res += data
+        }
+
+        if (oldApi) {
+          write(`\n## ${name}\n`)
+        } else {
+          write(`\n## ${name} - **NEW**\n`)
+          oldApi = {}
+        }
+
+        const propDiff = me.diffProps(oldApi.props, newApi.props).trimRight()
+        if (propDiff) {
+          write(`#### Props\n` + propDiff + '\n')
+        }
+        const eventDiff = me.diffEvents(oldApi.events, newApi.events).trimRight()
+        if (eventDiff) {
+          write(`#### Events\n` + eventDiff + '\n')
+        }
+        const methodDiff = me.diffMethods(oldApi.methods, newApi.methods).trimRight()
+        if (methodDiff) {
+          write(`#### Methods\n` + methodDiff + '\n')
+        }
+        return res
+      }).join('')
+  },
+
   fnFormat (name, params = {}) {
     return `${name}(${Object.keys(params).join(', ')})`
   },
