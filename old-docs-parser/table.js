@@ -11,12 +11,24 @@ function mergeRows (rows) {
       if (target === source) {
         return source
       }
-      return target + ', ' + source
+      return target + '|' + source
     }
   }), {})
 }
 
-module.exports = {
+const me = module.exports = {
+  mergeRows,
+  mergeDuplicatesByName (table, headers) {
+    return Object.entries(_.groupBy(table, r => r.name))
+      .map(([name, rows]) => {
+        if (rows.length > 1) {
+          console.log(`Merging duplicate row ${name} in the same table: ${headers}`)
+          console.log(`    -  ${rows.map(row => row.name + ' ' + row.desc)}`)
+          return mergeRows(rows)
+        }
+        return rows[0]
+      })
+  },
   parseTable ({ rows, headers }) {
     let tableHeader = rows[0].toLowerCase()
     let lastHeading = (headers[headers.length - 1] || '').toLowerCase()
@@ -41,15 +53,6 @@ module.exports = {
       throw new Error('mixed table - multiple types in one table')
     }
 
-    const deDup = Object.entries(_.groupBy(parsedRows, r => r.name))
-      .map(([name, rows]) => {
-        if (rows.length > 1) {
-          console.log(`Merging duplicate row ${name} in the same table: ${headers}`)
-          console.log(`    -  ${rows.map(row => row.name + ' ' + row.desc)}`)
-          return mergeRows(rows)
-        }
-        return rows[0]
-      })
-    return deDup
+    return me.mergeDuplicatesByName(parsedRows, headers)
   }
 }

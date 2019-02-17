@@ -1,5 +1,6 @@
 const fs = require('fs')
 const _ = require('lodash')
+const { mergeDuplicatesByName } = require('./old-docs-parser/table')
 const { parseTable } = require('./old-docs-parser/table')
 
 const { matchTag } = require('./old-docs-parser/tag-matcher')
@@ -70,12 +71,20 @@ let fullAPIs = Object
   .map(([tag, apis]) => {
     return {
       tag,
-      events: apis.map(api => api.events).flat(1),
-      props: apis.map(api => api.props).flat(1),
-      methods: apis.map(api => api.methods).flat(1),
-      hasDuplicates: (hasDuplicates(apis.map(api => api.events).flat(1), 'event', tag) ||
-        hasDuplicates(apis.map(api => api.props).flat(1), 'prop', tag) ||
-        hasDuplicates(apis.map(api => api.methods).flat(1), 'method', tag))
+      events: mergeDuplicatesByName(apis.map(api => api.events).flat(1)),
+      props: mergeDuplicatesByName(apis.map(api => api.props).flat(1)),
+      methods: mergeDuplicatesByName(apis.map(api => api.methods).flat(1))
+    }
+  })
+  .map(({ tag, events, props, methods }) => {
+    return {
+      tag,
+      events,
+      props,
+      methods,
+      hasDuplicates: (hasDuplicates(events, 'event', tag) ||
+        hasDuplicates(props, 'prop', tag) ||
+        hasDuplicates(methods, 'method', tag))
     }
   })
 const withoutDuplicates =
