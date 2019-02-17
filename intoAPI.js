@@ -1,15 +1,12 @@
 const fs = require('fs')
 const _ = require('lodash')
+const { parseFilesToMetaTables } = require('./old-docs-parser/parser')
 const { intoJSON } = require('./old-docs-parser/into-json')
 const { mergeDuplicatesByName } = require('./old-docs-parser/table')
-const { parseTable } = require('./old-docs-parser/table')
-
-const { matchTag } = require('./old-docs-parser/tag-matcher')
 const { kebabToPascal } = require('./utils/casing')
 const { parseVeturTags } = require('./old-docs-parser/vetur')
-const { parseDocsFile } = require('./old-docs-parser/file')
 
-const tags = parseVeturTags(require('./node_modules/quasar-framework/dist/helper-json/quasar-tags'))
+const veturTags = parseVeturTags(require('./node_modules/quasar-framework/dist/helper-json/quasar-tags'))
 const ignoredFiles = ['introduction-for-beginners']
 
 const mdPath = 'node_modules/quasar-old-docs/source/components'
@@ -22,7 +19,7 @@ function write (tag, api) {
 /**
  * TODO use this to report duplicates
  * @param elements
- * @return {any[]}
+ * @return {{name, desc}[]}
  */
 function getDuplicates (elements) {
   return Object.values(_.groupBy(elements, el => el.name))
@@ -33,17 +30,11 @@ function notIgnored (filename) {
   return !ignoredFiles.some(i => filename.includes(i))
 }
 
-const tables = oldFileNames
+const metaFiles = oldFileNames
   .filter(notIgnored)
   .map(filename => ({ filename, file: fs.readFileSync(`${mdPath}/${filename}`).toString() }))
-  .map(({ filename, file }) => parseDocsFile(file, filename))
-  .flat(1)
-  .map(tableData => ({
-    ...tableData,
-    table: parseTable(tableData)
-  }))
-  .filter(tableData => tableData.table.length) // filter empty (unparsed) tables
-  .map(tableData => matchTag(tableData, tags, console.log))
+
+const tables = parseFilesToMetaTables(metaFiles, veturTags)
 
 const unmatchedTables =
   tables
