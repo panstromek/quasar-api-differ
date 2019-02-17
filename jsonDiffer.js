@@ -43,7 +43,7 @@ function load (filename) {
 }
 
 newComponentApis
-  .concat(Object.entries(veturAPIs).map(([name]) => name).sort()
+  .concat(fs.readdirSync('./.json-api').map(desuffix).sort()
     .map((name) => {
       const filename = name + '.json'
 
