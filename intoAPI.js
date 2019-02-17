@@ -77,7 +77,6 @@ let fullAPIs = Object
   })
 
 const withoutDuplicates = fullAPIs
-const withDuplicates = fullAPIs
 
 console.log('Non problematic:')
 console.log(withoutDuplicates.map(t => t.tag))
@@ -93,7 +92,6 @@ console.log(tables
   .map(tableData => tableData.filename + ' --- ' + tableData.headers[tableData.headers.length - 1]))
 
 console.log('Has duplicates:')
-console.log(withDuplicates.map(t => t.tag))
 
 if (!fs.existsSync('.json-api')) {
   fs.mkdirSync('.json-api')
@@ -107,7 +105,7 @@ function paramsToJSON (params) {
   return params.reduce((jsonParams, param) => ({ ...jsonParams, [param]: {} }), {})
 }
 
-withoutDuplicates.forEach(({ tag, events, props, methods }) => {
+withoutDuplicates.map(({ tag, events, props, methods }) => {
   const jsonAPI = {
     type: 'component'
   }
@@ -135,9 +133,9 @@ withoutDuplicates.forEach(({ tag, events, props, methods }) => {
       }
     })
   }
-
-  write(tag, jsonAPI)
+  return { tag, api: jsonAPI }
 })
+  .map(({ tag, api }) => write(tag, api))
 
 function intoJSONAPIType (type) {
   if (type.length === 1) {
