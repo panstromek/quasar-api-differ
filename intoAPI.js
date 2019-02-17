@@ -26,10 +26,6 @@ const metaFiles = oldFileNames
 
 const tables = parseFilesToMetaTables(metaFiles, veturTags)
 
-const unmatchedTables =
-  tables
-    .filter(tableData => tableData.tags.length === 0) /// TODO try to lookup missing tags/attrs in unmatched tables (works only for props)
-
 const singeMatchAPIs =
   tables
     .filter(tableData => tableData.tags.length === 1)
@@ -47,18 +43,6 @@ const singeMatchAPIs =
         methods
       }
     })
-
-console.log()
-console.log()
-console.log('Unmatched Tables:')
-console.log(unmatchedTables.map(tableData => tableData.filename + ' --- ' + tableData.headers[tableData.headers.length - 1]))
-console.log()
-console.log('MultiMatched Tables:')
-console.log(tables
-  .filter(tableData => tableData.tags.length > 1)
-  .map(tableData => tableData.filename + ' --- ' + tableData.headers[tableData.headers.length - 1]))
-
-console.log('Has duplicates:')
 
 if (!fs.existsSync('.json-api')) {
   fs.mkdirSync('.json-api')
