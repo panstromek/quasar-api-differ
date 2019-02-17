@@ -9,27 +9,18 @@ const { parseVeturTags } = require('./old-docs-parser/vetur')
 const { parseDocsFile } = require('./old-docs-parser/file')
 
 const tags = parseVeturTags(require('./node_modules/quasar-framework/dist/helper-json/quasar-tags'))
+const ignoredFiles = ['introduction-for-beginners']
 
 const mdPath = 'node_modules/quasar-old-docs/source/components'
 const oldFileNames = fs.readdirSync(mdPath)
 
-function hasDuplicates (elements, elementName, tagName) {
-  const duplicates = Object.values(_.groupBy(elements, el => el.name))
+function getDuplicates (elements) {
+  return Object.values(_.groupBy(elements, el => el.name))
     .filter(els => els.length > 1).flat(1)
-
-  if (duplicates.length > 0) {
-    console.log()
-    console.log(`duplicate ${elementName}s in table for tag: ${tagName}:`)
-    console.log(duplicates.map(dup => `${dup.name} - ${dup.desc}`))
-    return true
-  }
-  return false
 }
 
 function notIgnored (filename) {
-  return ![
-    'introduction-for-beginners'
-  ].some(i => filename.includes(i))
+  return !ignoredFiles.some(i => filename.includes(i))
 }
 
 const tables = oldFileNames
@@ -81,19 +72,12 @@ let fullAPIs = Object
       tag,
       events,
       props,
-      methods,
-      hasDuplicates: (hasDuplicates(events, 'event', tag) ||
-        hasDuplicates(props, 'prop', tag) ||
-        hasDuplicates(methods, 'method', tag))
+      methods
     }
   })
-const withoutDuplicates =
-  fullAPIs
-    .filter(({ hasDuplicates }) => !hasDuplicates)
 
-const withDuplicates =
-  fullAPIs
-    .filter(({ hasDuplicates }) => hasDuplicates)
+const withoutDuplicates = fullAPIs
+const withDuplicates = fullAPIs
 
 console.log('Non problematic:')
 console.log(withoutDuplicates.map(t => t.tag))
