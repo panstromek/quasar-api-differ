@@ -53,11 +53,13 @@ module.exports = {
     }
     if (tagsInHeader.length === 0) {
       log()
-      log(filename + ' - nothing in header for ' + (table.map(row => row.name)))
+      log(filename + ' - nothing in header for table: ')
+      log('   - with headers ' + (headers))
+      log('   - with fields ' + (table.map(row => row.name)))
       return tableData
     }
     log()
-    log(`${filename} -  multiple tags for header (${lastHeader}) - ${tagsInHeader.map(t => t.pascalName)}`)
+    log(`${filename} -  multiple tags for header (${lastHeader}) - ${tagsInHeader.map(t => t.pascalName)} - assigned to both`)
     if (tagsInHeader.length) {
       tableData.tags.push(...tagsInHeader)
       return tableData
