@@ -14,6 +14,21 @@ const ignoredFiles = ['introduction-for-beginners']
 const mdPath = 'node_modules/quasar-old-docs/source/components'
 const oldFileNames = fs.readdirSync(mdPath)
 
+function intoJSONAPIType (type) {
+  if (type.length === 1) {
+    return type[0]
+  }
+  return type
+}
+
+function write (tag, api) {
+  fs.writeFileSync(`.json-api/${kebabToPascal(`q-${tag}`)}.json`, JSON.stringify(api))
+}
+
+function paramsToJSON (params) {
+  return params.reduce((jsonParams, param) => ({ ...jsonParams, [param]: {} }), {})
+}
+
 function getDuplicates (elements) {
   return Object.values(_.groupBy(elements, el => el.name))
     .filter(els => els.length > 1).flat(1)
@@ -97,14 +112,6 @@ if (!fs.existsSync('.json-api')) {
   fs.mkdirSync('.json-api')
 }
 
-function write (tag, api) {
-  fs.writeFileSync(`.json-api/${kebabToPascal(`q-${tag}`)}.json`, JSON.stringify(api))
-}
-
-function paramsToJSON (params) {
-  return params.reduce((jsonParams, param) => ({ ...jsonParams, [param]: {} }), {})
-}
-
 withoutDuplicates.map(({ tag, events, props, methods }) => {
   const jsonAPI = {
     type: 'component'
@@ -136,10 +143,3 @@ withoutDuplicates.map(({ tag, events, props, methods }) => {
   return { tag, api: jsonAPI }
 })
   .map(({ tag, api }) => write(tag, api))
-
-function intoJSONAPIType (type) {
-  if (type.length === 1) {
-    return type[0]
-  }
-  return type
-}
