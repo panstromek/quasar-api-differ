@@ -20,15 +20,15 @@ const metaFiles = fs.readdirSync(mdPath)
 if (!fs.existsSync('.json-api')) {
   fs.mkdirSync('.json-api')
 }
-
-parse(metaFiles, veturTags)
-  .map(({ tag, api }) => {
-    return fs.writeFileSync(`.json-api/${kebabToPascal(`q-${tag}`)}.json`, JSON.stringify(api))
-  })
-
 function load (filename) {
   return JSON.parse(fs.readFileSync(`./.json-api/${filename}`).toString())
 }
+
+const parsed = parse(metaFiles, veturTags)
+parsed
+  .map(({ tag, api }) => {
+    return fs.writeFileSync(`.json-api/${kebabToPascal(`q-${tag}`)}.json`, JSON.stringify(api))
+  })
 
 Object.entries(veturAPIs)
   .map(([name, veturApi]) => {
