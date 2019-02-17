@@ -9,9 +9,6 @@ const ignoredFiles = ['introduction-for-beginners']
 const oldTags = require('./node_modules/quasar-framework/dist/helper-json/quasar-tags')
 const oldAttrs = require('./node_modules/quasar-framework/dist/helper-json/quasar-attributes')
 const mdPath = 'node_modules/quasar-old-docs/source/components'
-const _ = require('lodash')
-
-const veturAPIs = intoJSONAPI(oldTags, oldAttrs)
 
 const metaFiles = fs.readdirSync(mdPath)
   .filter(filename => !ignoredFiles.some(ignored => filename.includes(ignored)))
@@ -20,22 +17,23 @@ const metaFiles = fs.readdirSync(mdPath)
 if (!fs.existsSync('.json-api')) {
   fs.mkdirSync('.json-api')
 }
-function load (filename) {
-  return JSON.parse(fs.readFileSync(`./.json-api/${filename}`).toString())
-}
+
+const veturAPIs = { ...intoJSONAPI(oldTags, oldAttrs) }
 
 const parsed = parse(metaFiles, veturTags)
 parsed
   .map(({ tag, api }) => {
-    return fs.writeFileSync(`.json-api/${kebabToPascal(`q-${tag}`)}.json`, JSON.stringify(api))
+    const name = kebabToPascal(`q-${tag}`)
+    const filename = name + '.json'
+
+    const veturApi = veturAPIs[name] || {}
+    delete veturAPIs[name]
+
+    const oldApi = mergeApis(veturApi, api)
+    fs.writeFileSync(`.json-api/${filename}`, JSON.stringify(oldApi))
   })
 
 Object.entries(veturAPIs)
   .map(([name, veturApi]) => {
-    const filename = name + '.json'
-
-    const oldApi = mergeApis(veturApi,
-      fs.existsSync(`./.json-api/${filename}`)
-        ? load(filename) : {})
-    fs.writeFileSync(`.json-api/${filename}`, JSON.stringify(oldApi))
+    fs.writeFileSync(`.json-api/${(name)}.json`, JSON.stringify(veturApi))
   })
