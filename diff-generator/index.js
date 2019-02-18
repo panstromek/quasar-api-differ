@@ -2,11 +2,15 @@ const { arraySetEq } = require('../utils/eq')
 const { keyEqOrd } = require('../utils/eq')
 const me = module.exports = {
 
-  generateMarkdownDiff (allAPIs = [], replacements = {}) {
+  generateMarkdownDiff (allAPIs = [], replacedByList = {}) {
     return allAPIs
       .map(({ oldApi, newApi, name }) => {
         if (!newApi) {
-          return (`## ${name}  - removed\n   - ${replacements[name]}\n`)
+          let res = (`## ${name}  - removed\n`)
+          if (replacedByList[name]) {
+            res += `   - ${replacedByList[name] || ''}\n`
+          }
+          return res
         }
         let res = ''
 
@@ -17,7 +21,11 @@ const me = module.exports = {
         if (oldApi) {
           write(`\n## ${name}\n`)
         } else {
-          write(`\n## ${name} - **NEW**\n`)
+          write(`\n## ${name} - **NEW**`)
+          if (name === 'QMenu') {
+            write(` - replaces QPopover and QContextMenu`)
+          }
+          write(`\n`)
           oldApi = {}
         }
 
