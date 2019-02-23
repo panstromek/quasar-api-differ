@@ -24,7 +24,7 @@
   [ "QModalLayout", "removed, can use QLayout with container prop", "QLayout" ],
   [ "QResizeObservable", "replaced by QResizeObserver", "QResizeObserver" ],
   [ "QScrollObservable", "replaced by QScrollObserver", "QScrollObserver" ],
-  [ "QWindowResize", "removed, use this.$q.height and this.$q.width directly" ],
+  [ "QWindowResizeObservable", "removed, use this.$q.height and this.$q.width directly" ],
   [ "QPopover", "replaced by QMenu", "QMenu" ],
   [ "QProgress", "replaced by QLinearProgress", "QLinearProgress" ],
   [ "QSearch", "replaced by QInput; hint: use the debounce prop" ],
