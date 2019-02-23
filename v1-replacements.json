@@ -25,10 +25,10 @@
   [ "QResizeObservable", "replaced by QResizeObserver", "QResizeObserver" ],
   [ "QScrollObservable", "replaced by QScrollObserver", "QScrollObserver" ],
   [ "QWindowResize", "removed, use this.$q.height and this.$q.width directly" ],
-  [ "QPopover", "replaced by QMenu" ],
-  [ "QProgress", "replaced by QLinearProgress" ],
+  [ "QPopover", "replaced by QMenu", "QMenu" ],
+  [ "QProgress", "replaced by QLinearProgress", "QLinearProgress" ],
   [ "QSearch", "replaced by QInput; hint: use the debounce prop" ],
-  [ "QSpinnerMat", "replaced by QSpinner" ],
-  [ "QTabPane", "replaced by QTabPanels + QTabPanel combo" ],
+  [ "QSpinnerMat", "replaced by QSpinner", "QSpinner"],
+  [ "QTabPane", "replaced by QTabPanels + QTabPanel combo", "QTabPanel" ],
   [ "QTableColumns", "removed; simply use a QSelect" ]
 ]
