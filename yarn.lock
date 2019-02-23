@@ -3432,10 +3432,10 @@ quasar-framework@^0.17.19:
     hexo-renderer-stylus "^0.3.1"
     hexo-server "^0.2.0"
 
-quasar@^1.0.0-beta.2:
-  version "1.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/quasar/-/quasar-1.0.0-beta.2.tgz#ba014e346691e55c3ed637343a464da8bac089e6"
-  integrity sha512-wXM8YA7g9ZXGRNaiRu3aEDfXXr4C1gf+ls/4nXb/hJJwrb8v1J8SXDzJTSOXYzfQMbUcH2FRcl/LgY+JV3ytrQ==
+quasar@^1.0.0-beta.4:
+  version "1.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/quasar/-/quasar-1.0.0-beta.4.tgz#8f8622af5dbe6c2385391a4151d306a2e31dc965"
+  integrity sha512-MybY/A4MAtxyKmiD9lrw+QrSELgDP4MpOci6N2DpmSy8ICq2VDe8Tm85Oj9IJf3eMCE6KZGn41Ldfry/MJzG6w==
 
 randomatic@^3.0.0:
   version "3.1.1"
