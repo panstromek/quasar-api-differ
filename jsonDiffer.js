@@ -63,7 +63,7 @@ If you find problem, report it please, but keep in mind that it's not possible t
 
 const mdDiff = `${diffHeader}
 
-${generateMarkdownDiff(allAPIs, replacedNotes)}`
+${generateMarkdownDiff(allAPIs, replacedNotes).replace(/(\n\n)/g, '\n')}`
 
 fs.writeFileSync(target, mdDiff)
 
