@@ -4,7 +4,7 @@ const me = module.exports = {
 
   generateMarkdownDiff (allAPIs = [], replacedByList = {}) {
     return allAPIs
-      .map(({ oldApi, newApi, name }) => {
+      .map(({ oldApi, newApi, name, replacement }) => {
         if (!newApi) {
           let res = (`## ${name}  - removed\n`)
           if (replacedByList[name]) {

@@ -13,7 +13,10 @@ const veturAPIs = intoJSONAPI(oldTags, oldAttrs)
 
 const target = 'api-diff.md'
 
-const replacements = _.fromPairs(require('./v1-replacements.json'))
+const replacementsJson = require('./v1-replacements.json')
+
+const replacedNotes = _.fromPairs(replacementsJson.map(arr => arr.slice(0, 2)))
+const replacementComponents = _.fromPairs(replacementsJson.map(arr => [arr[0], arr[2]]))
 
 function desuffix (filename) {
   return filename.substring(0, filename.length - 5)
@@ -33,10 +36,12 @@ const allAPIs =
     .filter(api => api.newApi.type === 'component')
     .concat(oldAPIs.sort()
       .map(filename => {
+        const replacement = replacementComponents[desuffix(filename)]
         return {
           oldApi: load(filename),
           newApi: fs.existsSync(`${newApiDir}/${filename}`) && require(`${newApiDir}/${filename}`),
-          name: desuffix(filename)
+          name: desuffix(filename),
+          replacement: replacement && require(`${newApiDir}/${replacement}.json`)
         }
       }))
 
@@ -46,7 +51,7 @@ const diffHeader = `
 Changelist between 0.17.19 and 1.0.0-beta.2 - additions, removals and changes in component APIs
 
 > **WARNING**
-> This file is partly generated from the old docs automatically - information may be incorrect, so take it with a grain of salt.
+> This file is generated automatically from old docs, vetur helpers and some hardcoded rules - information may be incorrect, so take it with a grain of salt.
 
 If you find problem, report it please, but keep in mind that it's not possible to generate this 100% correct automatically. It's meant to be just a tool for quick lookup of what you might need to focus on when migrating.
 
@@ -58,7 +63,7 @@ If you find problem, report it please, but keep in mind that it's not possible t
 
 const mdDiff = `${diffHeader}
 
-${generateMarkdownDiff(allAPIs, replacements)}`
+${generateMarkdownDiff(allAPIs, replacedNotes)}`
 
 fs.writeFileSync(target, mdDiff)
 
