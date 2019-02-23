@@ -2,24 +2,28 @@ const { arraySetEq } = require('../utils/eq')
 const { keyEqOrd } = require('../utils/eq')
 const me = module.exports = {
 
-  generateMarkdownDiff (allAPIs = [], replacedByList = {}) {
+  generateMarkdownDiff (allAPIs = [], replacementNotes = {}) {
     return allAPIs
       .map(({ oldApi, newApi, name, replacement }) => {
-        if (!newApi) {
-          let res = (`## ${name}  - removed\n`)
-          if (replacedByList[name]) {
-            res += `   - ${replacedByList[name] || ''}\n`
-          }
-          return res
-        }
         let res = ''
+        if (!newApi) {
+          res += (`## ${name}  - removed\n`)
+          if (replacementNotes[name]) {
+            res += `   - ${replacementNotes[name] || ''}\n`
+          }
+          if (replacement) {
+            newApi = replacement
+          } else {
+            return res
+          }
+        }
 
         function write (data) {
           res += data
         }
 
         if (oldApi) {
-          write(`\n## ${name}\n`)
+          if (!replacement) { write(`\n## ${name}\n`) }
         } else {
           write(`\n## ${name} - **NEW**`)
           if (name === 'QMenu') {
