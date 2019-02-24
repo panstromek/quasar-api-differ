@@ -38,7 +38,9 @@ module.exports = {
     }
     if (tagsInInstallationPart.length === 0) {
       log()
-      log(`UNMATCHED: ${filename} - nothing in installation part for ${table.map(row => row.name)}`)
+      log(`UNMATCHED: ${filename} - nothing in installation part for table:`)
+      log('   - with headers ' + (headers))
+      log('   - with fields ' + (table.map(row => row.name)))
       return tableData
     }
 
